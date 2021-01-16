@@ -6,8 +6,9 @@
                                                  ->jvm
                                                  get-attr
                                                  call-attr
-                                                 get-item]]))
-
+                                                 get-item
+                                                 initialize!]]))
+(initialize!)
 (require-python '[pandas :as pan])
 (require-python '[numpy :as np])
 (require-python '[sklearn.datasets])
@@ -15,39 +16,52 @@
 (require-python '[sklearn.model_selection :as model-selection])
 (require-python '[sklearn.inspection])
 (require-python '[sklearn.metrics])
-(require-python '[sklearn.tree])
-(require-python '[])
+(require-python '[sklearn.tree :as skltree])
+;(require-python '[])
 
 (defn fit-model-and-predict [x y x-held-out y-held-out])
 
-(defn get-feature-names [tree]
+(defn get-feature-names
   "Returns a coll of feature names from the decision tree."
+  [tree]
   (py/get-attr tree :feature))
 
 (defn get-feature-name [node]
-  )
+  (py/get-item ))
 
-(defn get-threshold [node tree]
+(defn get-threshold
+  "Gets threshold at node in tree."
+  [node tree]
   (py/get-item (py/get-attr tree :threshold) node))
 
-(defn get-children-left [node tree]
+(defn get-children-left
+  "Gets left-child of node in tree."
+  [node tree]
   (py/get-item (py/get-attr tree :children_left) node))
 
-(defn get-children-right [node tree]
+(defn get-children-right
+  "Gets right-child of node in tree."
+  [node tree]
   (py/get-item (py/get-attr tree :children_right) node))
 
-(defn walk-tree [node depth tree]
+(defn get-tree-feature
+  "Gets feature at node in tree."
+  [node tree]
+  (py/get-item (py/get-attr tree :feature) node))
+
+(defn walk-tree
   "Walks over the tree, constructing the if statemen representing the decision tree"
-  (let [name ()
+  [node tree feature-names]
+  (let [name (nth node feature-names)
         threshold (get-threshold node tree)]
-    (if (not= (<= name threshold))
-      '(if '(<= name threshold)
-         (walk-tree (get-children-left node tree)
-                    (inc depth)
-                    tree)
-         (walk-tree (get-children-right node tree)
-                    (inc depth)
-                    tree))
+    (if (not= (get-tree-feature node tree) (py/get-attr skltree/_tree :TREE_UNDEFINED))
+      `(if (<= ~name ~threshold)
+         ~(walk-tree (get-children-left node tree)
+                    tree
+                    feature-names)
+         ~(walk-tree (get-children-right node tree)
+                    tree
+                    feature-names))
       (py/get-item (py/get-attr tree :value) node))))
 
 (defn decision-tree->s-exps
@@ -55,4 +69,14 @@
   [tree feature-names]
   (let [tree (py/get-attr tree :_tree)]
     '(defn (name-tree )
-       (walk-tree ))))
+       (walk-tree 0 tree feature-names))))
+
+(defn generate-trees! [src]
+  "Builds trees.clj"
+  (spit ))
+
+(defn gen-if [name threshold]
+  `(if (<= ~name ~threshold)
+     ~(+ 1 0)
+     ~(+ 1 1)))
+(gen-if 1 9)
