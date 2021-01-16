@@ -5,7 +5,8 @@
                                                  ->python
                                                  ->jvm
                                                  get-attr
-                                                 call-attr]]))
+                                                 call-attr
+                                                 get-item]]))
 
 (require-python '[pandas :as pan])
 (require-python '[numpy :as np])
@@ -17,23 +18,41 @@
 (require-python '[sklearn.tree])
 (require-python '[])
 
+(defn fit-model-and-predict [x y x-held-out y-held-out])
+
 (defn get-feature-names [tree]
   "Returns a coll of feature names from the decision tree."
-  (get-attr tree :feature))
+  (py/get-attr tree :feature))
 
-(defn walk-tree [node depth]
+(defn get-feature-name [node]
+  )
+
+(defn get-threshold [node tree]
+  (py/get-item (py/get-attr tree :threshold) node))
+
+(defn get-children-left [node tree]
+  (py/get-item (py/get-attr tree :children_left) node))
+
+(defn get-children-right [node tree]
+  (py/get-item (py/get-attr tree :children_right) node))
+
+(defn walk-tree [node depth tree]
   "Walks over the tree, constructing the if statemen representing the decision tree"
   (let [name ()
-        threshold ()]
+        threshold (get-threshold node tree)]
     (if (not= (<= name threshold))
       '(if '(<= name threshold)
-         (walk-tree node (inc depth))
-         (walk-tree node (inc depth)))
+         (walk-tree (get-children-left node tree)
+                    (inc depth)
+                    tree)
+         (walk-tree (get-children-right node tree)
+                    (inc depth)
+                    tree))
       (py/get-item (py/get-attr tree :value) node))))
 
 (defn decision-tree->s-exps
   "Converts a decision tree into a clojure function by recursing over its nodes."
-  [tree ]
+  [tree feature-names]
   (let [tree (py/get-attr tree :_tree)]
     '(defn (name-tree )
-       )))
+       (walk-tree ))))
