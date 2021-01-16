@@ -50,11 +50,12 @@
   (py/get-item (py/get-attr tree :feature) node))
 
 (defn walk-tree
-  "Walks over the tree, constructing the if statemen representing the decision tree"
+  "Walks over the tree, constructing the if statement representing the decision tree"
   [node tree feature-names]
   (let [name (nth node feature-names)
         threshold (get-threshold node tree)]
-    (if (not= (get-tree-feature node tree) (py/get-attr skltree/_tree :TREE_UNDEFINED))
+    (if (not= (get-tree-feature node tree)
+              (py/get-attr skltree/_tree :TREE_UNDEFINED))
       `(if (<= ~name ~threshold)
          ~(walk-tree (get-children-left node tree)
                     tree
@@ -70,6 +71,11 @@
   (let [tree (py/get-attr tree :_tree)]
     '(defn (name-tree )
        (walk-tree 0 tree feature-names))))
+
+(for [x (range (py/get-item (py/get-attr model :estimators_) 0))
+      y (py/get-item (py/get-attr model:estimators_) 0)
+      :let [tree (py/get-item (py/get-attr model :estimators_) x y)]]
+  (decision-tree->s-exps tree feature-names))
 
 (defn generate-trees! [src]
   "Builds trees.clj"
