@@ -1,12 +1,14 @@
 # market-model
 
 A Clojure library designed to parse in decision trees from a python machine
-learning mdoel and compute them in parallel.
+learning model and compute them in parallel. To use this library, require it in your project.clj, call ```clojure (generate-trees! model)``` with your ensemble to generate the trees.
 
-name-spaces:
-tree-parser: contains function to parse in a given set of decision trees
-market-price: houses the logic for running the reduction over the models
-trees: namespace generated to hold decision trees for inspection
+## name-spaces:
+market-model.tree-parser: contains function to parse in a given set of decision trees.
+
+market-model.market-price: houses the logic for running the reduction over the models.
+
+trees: namespace generated to hold decision trees for inspection.
 
 ## Usage
 
