@@ -56,7 +56,7 @@
         threshold (get-threshold node tree)]
     (if (not= (get-tree-feature node tree)
               (py/get-attr skltree/_tree :TREE_UNDEFINED))
-      `(if (<= ~name ~threshold)
+      `(if (~'<= ~name ~threshold)
          ~(walk-tree (get-children-left node tree)
                     tree
                     feature-names)
@@ -81,11 +81,11 @@
   "Builds trees.clj"
   (spit "src/trees.clj"
         (str '(ns trees) "\n\n"
-         `(defn tree-0 ['foo 'bar 'baz]
+         `(~'defn ~'tree-0 ~'[foo bar baz]
             ~(gen-if 1 9)))))
 
 (defn gen-if [name threshold]
-  `(if (<= ~name ~threshold)
+  `(if (~'<= ~name ~threshold)
      ~(+ 1 0)
      ~(+ 1 1)))
 (gen-if 1 9)
