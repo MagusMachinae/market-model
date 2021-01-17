@@ -5,3 +5,4 @@
 
 (repl/dir trees-ns)
 (defn derive-market-price [{}])
+(keys (ns-publics 'trees))
