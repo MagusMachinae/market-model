@@ -69,8 +69,8 @@
   "Converts a decision tree into a clojure function by recursing over its nodes."
   [tree feature-names]
   (let [tree (py/get-attr tree :_tree)]
-    '(defn (name-tree )
-       (walk-tree 0 tree feature-names))))
+    '(defn (name-tree ) ~feature-names
+       ~(walk-tree 0 tree feature-names))))
 
 (for [x (range (py/get-item (py/get-attr model :estimators_) 0))
       y (py/get-item (py/get-attr model:estimators_) 0)
