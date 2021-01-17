@@ -79,7 +79,10 @@
 
 (defn generate-trees! [src]
   "Builds trees.clj"
-  (spit ))
+  (spit "src/trees.clj"
+        (str '(ns trees) "\n\n"
+         `(defn tree-0 ['foo 'bar 'baz]
+            ~(gen-if 1 9)))))
 
 (defn gen-if [name threshold]
   `(if (<= ~name ~threshold)
