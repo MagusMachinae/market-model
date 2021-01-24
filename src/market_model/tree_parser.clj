@@ -22,12 +22,12 @@
 (defn fit-model-and-predict [x y x-held-out y-held-out])
 
 (defn get-feature-names
-  "Returns a coll of feature names from the decision tree."
+  "Returns a coll of feature names from the data set."
   [tree]
-  (py/get-attr tree :feature))
+  (py/get-attr tree :feature_names))
 
 (defn get-feature-name [node]
-  (py/get-item ))
+  (py/get-item))
 
 (defn get-threshold
   "Gets threshold at node in tree."
