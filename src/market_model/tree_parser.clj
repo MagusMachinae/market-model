@@ -72,17 +72,20 @@
     '(defn (name-tree ) ~feature-names
        ~(walk-tree 0 tree feature-names))))
 
-(for [x (range (py/get-item (py/get-attr model :estimators_) 0))
-      y (py/get-item (py/get-attr model:estimators_) 0)
-      :let [tree (py/get-item (py/get-attr model :estimators_) x y)]]
-  (decision-tree->s-exps tree feature-names))
+(defn model->clj [model feature-names]
+  (for [x (range (py/get-item (py/get-attr model :estimators_) 0))
+        y (py/get-item (py/get-attr model :estimators_) 0)
+        :let [tree (py/get-item (py/get-attr model :estimators_) x y)]]
+    (decision-tree->s-exps tree feature-names)))
 
 (defn generate-trees! [src]
   "Builds trees.clj"
-  (spit "src/trees.clj"
-        (str '(ns trees) "\n\n"
-         `(~'defn ~'tree-0 ~'[foo bar baz]
-            ~(gen-if 1 9)))))
+  )
+
+(spit "src/trees.clj"
+      (str '(ns trees) "\n\n"
+           `(~'defn ~'tree-0 ~'[foo bar baz]
+              ~(gen-if 1 9))))
 
 (defn gen-if [name threshold]
   `(if (~'<= ~name ~threshold)
