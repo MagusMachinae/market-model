@@ -10,6 +10,7 @@
                                                  initialize!
                                                  call-kw]]))
 (initialize!)
+
 (require-python '[pandas :as pan]
                 '[numpy :as np]
                 '[numpy :as np]
@@ -19,13 +20,13 @@
                 '[sklearn.inspection]
                 '[sklearn.metrics])
 
-
+(m/model)
 (require-python 'os)
-
+(np/add 1 2)
 (os/getcwd)
 (m/f)
 (do (os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
-  (require-python '[model :as m])
+  (require-python '[model :as mm])
   (os/chdir "/home/magusmachinae/Documents/Programming/market-model"))
 
 (def boston (ds/load_boston))
@@ -54,19 +55,22 @@
   "Gets feature at node in tree."
   [node tree]
   (py/get-item (py/get-attr tree :feature) node))
+(call-)
+(fit)
+(def boston-model-prediction (modelo/fit-model-and-predict
+                                      (drop  100 (py/get-attr boston :data))
+                                      (drop  100 (py/get-attr boston :target))
+                                      (take 100 (py/get-attr boston :data))
+                                      (take 100 (py/get-attr boston :target))
+                                      (get-feature-names boston)
+                                      {:max_depth 9 :n_estimators 500 :subsample 0.5}))
 
-  (def boston-model-prediction (call-kw fit-model-and-predict
-                                           (drop  100 (py/get-attr boston :data))
-                                           (drop  100 (py/get-attr boston :target))
-                                           (take 100 (py/get-attr boston :data))
-                                           (take 100 (py/get-attr boston :target))
-                                           (get-feature-names boston)
-                                           {:max_depth 9 :n_estimators 500 :subsample 0.5}))
+(model->clj mm/model (as-jvm (get-feature-names boston)))
 
 (defn walk-tree
   "Walks over the tree, constructing the if statement representing the decision tree"
   [node tree feature-names]
-  (let [name (nth node feature-names)
+  (let [name (nth feature-names node)
         threshold (get-threshold node tree)]
     (if (not= (get-tree-feature node tree)
               -2)
@@ -82,22 +86,23 @@
 (defn decision-tree->s-exps
   "Converts a decision tree into a clojure function by recursing over its nodes."
   [tree feature-names]
-  (let [tree (py/get-attr tree :_tree)]
-    '(defn ~'decision-tree ~feature-names
+  (let [tree (py/get-attr tree :tree_)]
+    `(defn ~'decision-tree ~@feature-names
        ~(walk-tree 0 tree feature-names))))
 
-(defn model->clj [model feature-names]
+(defn model->clj
   "loops over estimators to build up the decision tree, then converts it into s-exps"
+  [model feature-names]
   (for [x (range (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 0))
-        y (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 0)
-        :let [tree (py/get-item (py/get-attr model :estimators_) x y)]]
+        y (range (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 1))
+        :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
 (defn generate-trees! [model feature-names]
   "Builds trees.clj from a source-file"
   (spit "src/trees.clj"
     (str '(ns trees) "\n\n"
-          `(~'defn ~'decision-tree ~feature-names
+          `(~'defn ~'decision-tree ~`feature-names
             ~(model->clj model feature-names)))))
 
 (spit "src/trees.clj"
