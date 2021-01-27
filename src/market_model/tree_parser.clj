@@ -20,7 +20,8 @@
 (require-python 'os)
 (require-python '[model :as m])
 (os/getcwd)
-(os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
+(py/import-module 'model)
+
 
 (defn fit-model-and-predict [x y x-held-out y-held-out])
 
