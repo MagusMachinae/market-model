@@ -7,23 +7,28 @@
                                                  get-attr
                                                  call-attr
                                                  get-item
-                                                 initialize!]]))
+                                                 initialize!
+                                                 call-kw]]))
 (initialize!)
-(require-python '[pandas :as pan])
-(require-python '[numpy :as np])
-(require-python '[sklearn.datasets])
-(require-python '[sklearn.ensemble])
-(require-python '[sklearn.model_selection :as model-selection])
-(require-python '[sklearn.inspection])
-(require-python '[sklearn.metrics])
-(require-python '[sklearn.tree :as skltree])
+(require-python '[pandas :as pan]
+                '[numpy :as np]
+                '[numpy :as np]
+                '[sklearn.datasets :as ds]
+                '[sklearn.ensemble]
+                '[sklearn.model_selection :as model-selection]
+                '[sklearn.inspection]
+                '[sklearn.metrics])
+
+
 (require-python 'os)
-(require-python '[model :as m])
+
 (os/getcwd)
-(py/import-module 'model)
+(m/f)
+(do (os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
+  (require-python '[model :as m])
+  (os/chdir "/home/magusmachinae/Documents/Programming/market-model"))
 
-
-(defn fit-model-and-predict [x y x-held-out y-held-out])
+(def boston (ds/load_boston))
 
 (defn get-feature-names
   "Returns a coll of feature names from the data set."
@@ -50,13 +55,21 @@
   [node tree]
   (py/get-item (py/get-attr tree :feature) node))
 
+  (def boston-model-prediction (call-kw fit-model-and-predict
+                                           (drop  100 (py/get-attr boston :data))
+                                           (drop  100 (py/get-attr boston :target))
+                                           (take 100 (py/get-attr boston :data))
+                                           (take 100 (py/get-attr boston :target))
+                                           (get-feature-names boston)
+                                           {:max_depth 9 :n_estimators 500 :subsample 0.5}))
+
 (defn walk-tree
   "Walks over the tree, constructing the if statement representing the decision tree"
   [node tree feature-names]
   (let [name (nth node feature-names)
         threshold (get-threshold node tree)]
     (if (not= (get-tree-feature node tree)
-              (py/get-attr skltree/_tree :TREE_UNDEFINED))
+              -2)
       `(if (~'<= ~name ~threshold)
          ~(walk-tree (get-children-left node tree)
                     tree
@@ -80,7 +93,7 @@
         :let [tree (py/get-item (py/get-attr model :estimators_) x y)]]
     (decision-tree->s-exps tree feature-names)))
 
-(defn generate-trees! [src]
+(defn generate-trees! [model feature-names]
   "Builds trees.clj from a source-file"
   (spit "src/trees.clj"
     (str '(ns trees) "\n\n"
