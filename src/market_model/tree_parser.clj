@@ -74,8 +74,8 @@
 
 (defn model->clj [model feature-names]
   "loops over estimators to build up the decision tree, then converts it into s-exps"
-  (for [x (range (py/get-item (py/get-attr model :estimators_) 0))
-        y (py/get-item (py/get-attr model :estimators_) 0)
+  (for [x (range (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 0))
+        y (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 0)
         :let [tree (py/get-item (py/get-attr model :estimators_) x y)]]
     (decision-tree->s-exps tree feature-names)))
 
