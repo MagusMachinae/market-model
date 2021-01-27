@@ -102,8 +102,7 @@
   "Builds trees.clj from a source-file"
   (spit "src/trees.clj"
     (str '(ns trees) "\n\n"
-          `(~'defn ~'decision-tree ~`feature-names
-            ~(model->clj model feature-names)))))
+         ~(model->clj model feature-names))))
 
 (spit "src/trees.clj"
       (str '(ns trees) "\n\n"
