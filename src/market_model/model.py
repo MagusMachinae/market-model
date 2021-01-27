@@ -173,3 +173,7 @@ def create_performance_plot(
     ax.set_ylabel(ylabel)
 
     return f
+settings = {"max_depth": 9, "n_estimators": 500, "subsample": 0.5}
+
+y_prime, train_estimate_y, frame, model = fit_model_and_predict(
+    X, y, Xeval, yeval, Xnames=boston["feature_names"], **settings)
