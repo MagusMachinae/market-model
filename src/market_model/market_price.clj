@@ -4,5 +4,8 @@
             [clojure.repl :as repl]))
 
 (repl/dir trees-ns)
-(defn derive-market-price [{}])
+(defn derive-market-price
+  "Runs regression models over input."
+  [{}]
+  (->>))
 (keys (ns-publics 'trees))
