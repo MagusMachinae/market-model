@@ -17,7 +17,10 @@
 (require-python '[sklearn.inspection])
 (require-python '[sklearn.metrics])
 (require-python '[sklearn.tree :as skltree])
-;(require-python '[])
+(require-python 'os)
+(require-python '[model :as m])
+(os/getcwd)
+(os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
 
 (defn fit-model-and-predict [x y x-held-out y-held-out])
 
@@ -25,9 +28,6 @@
   "Returns a coll of feature names from the data set."
   [tree]
   (py/get-attr tree :feature_names))
-
-(defn get-feature-name [node]
-  (py/get-item))
 
 (defn get-threshold
   "Gets threshold at node in tree."
@@ -69,7 +69,7 @@
   "Converts a decision tree into a clojure function by recursing over its nodes."
   [tree feature-names]
   (let [tree (py/get-attr tree :_tree)]
-    '(defn (name-tree ) ~feature-names
+    '(defn ~'decision-tree ~feature-names
        ~(walk-tree 0 tree feature-names))))
 
 (defn model->clj [model feature-names]
@@ -81,12 +81,15 @@
 
 (defn generate-trees! [src]
   "Builds trees.clj from a source-file"
-  )
+  (spit "src/trees.clj"
+    (str '(ns trees) "\n\n"
+          `(~'defn ~'decision-tree ~feature-names
+            ~(model->clj model feature-names)))))
 
 (spit "src/trees.clj"
       (str '(ns trees) "\n\n"
            `(~'defn ~'tree-0 ~'[foo bar baz]
-              ~(gen-if 1 9))))
+              ~(gen-if 1 'foo))))
 
 (defn gen-if [name threshold]
   `(if (~'<= ~name ~threshold)
