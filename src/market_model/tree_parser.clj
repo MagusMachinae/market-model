@@ -8,7 +8,10 @@
                                                  call-attr
                                                  get-item
                                                  initialize!
-                                                 call-kw]]))
+                                                 call-kw]]
+            [clojure.java.io :as io]
+            [clojure.string :as str]))
+
 (initialize!)
 
 (require-python '[pandas :as pan]
@@ -18,11 +21,19 @@
                 '[sklearn.ensemble]
                 '[sklearn.model_selection :as model-selection]
                 '[sklearn.inspection]
-                '[sklearn.metrics])
+                '[sklearn.metrics]
+                '[pickle :as pick]
+                '[io :as py-io]
+                '[build_and_export_model.py :as modela])
 
 (m/model)
+
+(defn features-from-file
+  "Creates a vector of feature names from a file path."
+  [path]
+  (mapv symbol (str/split-lines (slurp "ext/feature_names.txt"))))
 (require-python 'os)
-(np/add 1 2)
+(np/add [1 2 3] [2 2 2])
 (os/getcwd)
 (m/f)
 (do (os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
@@ -30,6 +41,11 @@
   (os/chdir "/home/magusmachinae/Documents/Programming/market-model"))
 
 (def boston (ds/load_boston))
+
+(defn un-pickle
+  "Takes a string of the relative location of the python file containing the model and returns the python object stored in pickle."
+  [file]
+  (pick/load (py-io/open file "rb")))
 
 (defn get-feature-names
   "Returns a coll of feature names from the data set."
@@ -55,26 +71,26 @@
   "Gets feature at node in tree."
   [node tree]
   (py/get-item (py/get-attr tree :feature) node))
-(call-)
-(fit)
-(def boston-model-prediction (modelo/fit-model-and-predict
+
+(def boston-model-prediction (mm/fit-model-and-predict
                                       (drop  100 (py/get-attr boston :data))
                                       (drop  100 (py/get-attr boston :target))
                                       (take 100 (py/get-attr boston :data))
                                       (take 100 (py/get-attr boston :target))
                                       (get-feature-names boston)
                                       {:max_depth 9 :n_estimators 500 :subsample 0.5}))
-
-(model->clj mm/model (as-jvm (get-feature-names boston)))
+mm/
+(model->clj mm/model (class (first (into '() (get-feature-names boston)))))
+(class (first (drop  100 (py/get-attr boston :target))))
 
 (defn walk-tree
   "Walks over the tree, constructing the if statement representing the decision tree"
   [node tree feature-names]
-  (let [name (nth feature-names node)
-        threshold (get-threshold node tree)]
+  (let [name (nth feature-names (get-tree-feature node tree))
+        threshold  (get-threshold node tree)]
     (if (not= (get-tree-feature node tree)
               -2)
-      `(if (~'<= ~name ~threshold)
+      `(if (~'<= ~'name ~threshold)
          ~(walk-tree (get-children-left node tree)
                     tree
                     feature-names)
@@ -98,8 +114,21 @@
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
-(defn generate-trees! [model feature-names]
+(class (first  (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+                     y (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
+                     :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+
+                   (get-tree-feature 01 (py/get-attr tree :tree_)))))
+
+(dec)
+(model->clj mm/model (get-feature-names boston))
+
+(let [tree (map (fn [x] (py/get-item (py/get-attr mm/model :estimators_) [x 0])) (range 500))]
+  (map #(get ))(map #(py/get-attr % :tree_) tree))
+(walk-tree 0 (py/get-item (py/get-attr mm/model :estimators_) [0 0]) )
+(defn generate-trees!
   "Builds trees.clj from a source-file"
+  [model feature-names]
   (spit "src/trees.clj"
     (str '(ns trees) "\n\n"
          ~(model->clj model feature-names))))
@@ -108,9 +137,11 @@
       (str '(ns trees) "\n\n"
            `(~'defn ~'tree-0 ~'[foo bar baz]
               ~(gen-if 1 'foo))))
-
+(symbol "foo")
 (defn gen-if [name threshold]
-  `(if (~'<= ~name ~threshold)
+  `(if (~'<= ~'name ~threshold)
      ~(+ 1 0)
-     ~(+ 1 1)))
-(gen-if 1 9)
+     (+ 1 1)))
+(gen-if 'foo 2)
+
+`('+ 2 2)
