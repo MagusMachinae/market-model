@@ -29,9 +29,10 @@
 (m/model)
 
 (defn features-from-file
-  "Creates a vector of feature names from a file path."
+  "Creates a vector of feature names from a string representing a file path."
   [path]
-  (mapv symbol (str/split-lines (slurp "ext/feature_names.txt"))))
+  (mapv symbol (str/split-lines (slurp path))))
+
 (require-python 'os)
 (np/add [1 2 3] [2 2 2])
 (os/getcwd)
