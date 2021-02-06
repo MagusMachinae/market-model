@@ -23,10 +23,10 @@
                 '[sklearn.inspection]
                 '[sklearn.metrics]
                 '[pickle :as pick]
-                '[io :as py-io]
-                '[build_and_export_model.py :as modela])
+                '[io :as py-io])
 
-(m/model)
+
+
 
 (defn features-from-file
   "Creates a vector of feature names from a string representing a file path."
@@ -36,7 +36,7 @@
 (require-python 'os)
 (np/add [1 2 3] [2 2 2])
 (os/getcwd)
-(m/f)
+
 (do (os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
   (require-python '[model :as mm])
   (os/chdir "/home/magusmachinae/Documents/Programming/market-model"))
@@ -80,14 +80,14 @@
                                       (take 100 (py/get-attr boston :target))
                                       (get-feature-names boston)
                                       {:max_depth 9 :n_estimators 500 :subsample 0.5}))
-mm/
+
 (model->clj mm/model (class (first (into '() (get-feature-names boston)))))
 (class (first (drop  100 (py/get-attr boston :target))))
 
 (defn walk-tree
-  "Walks over the tree, constructing the if statement representing the decision tree"
+  "Walks over the tree, constructing the if statement representing the node in the decision tree"
   [node tree feature-names]
-  (let [name (nth feature-names (get-tree-feature node tree))
+  (let [name (nth feature-names (first (get-tree-feature node tree)))
         threshold  (get-threshold node tree)]
     (if (not= (get-tree-feature node tree)
               -2)
@@ -101,32 +101,35 @@ mm/
       (py/get-item (py/get-attr tree :value) node))))
 
 (defn decision-tree->s-exps
-  "Converts a decision tree into a clojure function by recursing over its nodes."
+  "Converts a decision tree into a clojure function definition by recursing over its nodes."
   [tree feature-names]
   (let [tree (py/get-attr tree :tree_)]
     `(defn ~'decision-tree ~@feature-names
        ~(walk-tree 0 tree feature-names))))
 
 (defn model->clj
-  "loops over estimators to build up the decision tree, then converts it into s-exps"
+  "loops over estimators to build up the decision tree, then converts it into Clojure symbolic-expressions"
   [model feature-names]
   (for [x (range (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 0))
         y (range (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 1))
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
-(class (first  (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
-                     y (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
-                     :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+(long (map py/->jvm (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+                   y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
+                   :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
 
-                   (get-tree-feature 01 (py/get-attr tree :tree_)))))
+               (get-tree-feature 0 (py/get-attr tree :tree_)))))
 
+(range 2)
 (dec)
 (model->clj mm/model (get-feature-names boston))
 
-(let [tree (map (fn [x] (py/get-item (py/get-attr mm/model :estimators_) [x 0])) (range 500))]
-  (map #(get ))(map #(py/get-attr % :tree_) tree))
-(walk-tree 0 (py/get-item (py/get-attr mm/model :estimators_) [0 0]) )
+(let [tree (mapv (fn [x] (py/get-item (py/get-attr mm/model :estimators_) [x 0])) (range 500))]
+  (mapv (fn [x] (get-tree-feature 0 x)) (mapv #(py/get-attr % :tree_) tree)))
+
+(walk-tree 0 (py/get-item (py/get-attr mm/model :estimators_) [0 0]))
+
 (defn generate-trees!
   "Builds trees.clj from a source-file"
   [model feature-names]
