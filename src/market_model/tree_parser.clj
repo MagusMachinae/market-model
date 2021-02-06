@@ -48,6 +48,8 @@
   [file]
   (pick/load (py-io/open file "rb")))
 
+(un-pickle "ext/gbm_model.pickle")
+
 (defn get-feature-names
   "Returns a coll of feature names from the data set."
   [tree]
@@ -121,6 +123,11 @@
 
                (get-tree-feature 0 (py/get-attr tree :tree_)))))
 
+(for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
+                    y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
+                    :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
+                (get-tree-feature 0 (py/get-attr tree :tree_)))
+
 (range 2)
 (dec)
 (model->clj mm/model (get-feature-names boston))
@@ -149,3 +156,5 @@
 (gen-if 'foo 2)
 
 `('+ 2 2)
+
+(or)
