@@ -1,7 +1,10 @@
 # market-model
 
 A Clojure library designed to parse in decision trees from a python machine
-learning model and compute them in parallel. To use this library, require it in your project.clj, call ```clojure (generate-trees! model)``` with your ensemble to generate the trees.
+learning model and compute them in parallel. To use this library, require it in your project.clj, place the python file containing the model and feature names of the data
+in ```ext/```,  call ```clojure (generate-trees! "ext/your-file-name.py")``` with your ensemble to generate the trees and place them in ```trees.clj```.
+
+Alternatively
 
 ## name-spaces:
 market-model.tree-parser: contains function to parse in a given set of decision trees.
