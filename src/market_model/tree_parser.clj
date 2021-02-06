@@ -75,14 +75,6 @@
   [node tree]
   (py/get-item (py/get-attr tree :feature) node))
 
-(def boston-model-prediction (mm/fit-model-and-predict
-                                      (drop  100 (py/get-attr boston :data))
-                                      (drop  100 (py/get-attr boston :target))
-                                      (take 100 (py/get-attr boston :data))
-                                      (take 100 (py/get-attr boston :target))
-                                      (get-feature-names boston)
-                                      {:max_depth 9 :n_estimators 500 :subsample 0.5}))
-
 (model->clj mm/model (class (first (into '() (get-feature-names boston)))))
 (class (first (drop  100 (py/get-attr boston :target))))
 
