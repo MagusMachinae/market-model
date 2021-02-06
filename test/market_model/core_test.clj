@@ -9,6 +9,7 @@
 (def expected-results (map read-string (map last (rest test-battery))))
 
 (deftest a-test
-  (testing "FIXME, I fail."
+  (testing "Validate generated function against battery of results from python code."
     (is (= expected-results
-           (map (fn [x] (apply derive-market-price (quote x))))))))
+           (map (fn [x] (apply derive-market-price x)) inputs)))))
+(map (fn [x] (apply + x)) inputs)
