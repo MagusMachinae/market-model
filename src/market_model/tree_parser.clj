@@ -51,7 +51,8 @@
 (un-pickle "ext/gbm_model.pickle")
 
 (defn get-feature-names
-  "Returns a coll of feature names from the data set."
+  "Returns a collection of feature names from the data set.
+  Intended for interop use to get collection of variable names used to build name nodes in regression tree."
   [tree]
   (py/get-attr tree :feature_names))
 
