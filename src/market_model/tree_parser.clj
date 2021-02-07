@@ -79,13 +79,15 @@
 (class (first (drop  100 (py/get-attr boston :target))))
 
 (defn walk-tree
-  "Walks over the tree, constructing the if statement representing the node in the decision tree"
+  "Walks over the tree, constructing the if statement representing the node in the decision tree.
+  Every node is checked for whether the value is undefined (ie. the value of the node is -2). If it is,
+  the value is returned for that node. Otherwise, walk-tree is recursively called."
   [node tree feature-names]
   (let [name (nth feature-names (first (get-tree-feature node tree)))
         threshold  (get-threshold node tree)]
     (if (not= (get-tree-feature node tree)
               -2)
-      `(if (~'<= ~'name ~threshold)
+      `(if (~'<= ~name ~threshold)
          ~(walk-tree (get-children-left node tree)
                     tree
                     feature-names)
