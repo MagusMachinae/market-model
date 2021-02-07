@@ -75,7 +75,7 @@
   [node tree]
   (py/get-item (py/get-attr tree :feature) node))
 
-(model->clj mm/model (class (first (into '() (get-feature-names boston)))))
+
 (class (first (drop  100 (py/get-attr boston :target))))
 
 (defn walk-tree
@@ -109,11 +109,14 @@
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
-(long (map py/->jvm (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
-                   y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
-                   :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+(model->clj mm/model (class (first (into '() (get-feature-names boston)))))
 
-               (get-tree-feature 0 (py/get-attr tree :tree_)))))
+
+(map py/->jvm (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+                           y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
+                           :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+
+                       (get-tree-feature 0 (py/get-attr tree :tree_))))
 
 (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
                     y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
