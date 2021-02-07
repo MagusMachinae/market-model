@@ -10,7 +10,8 @@
                                                  initialize!
                                                  call-kw]]
             [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [tech.v3.datatype :as dtype]))
 
 (initialize!)
 
@@ -51,10 +52,10 @@
 (un-pickle "ext/gbm_model.pickle")
 
 (defn get-feature-names
-  "Returns a collection of feature names from the data set.
+  "Returns a collection of feature names from the data set as Clojure symbols.
   Intended for interop use to get collection of variable names used to build name nodes in regression tree."
   [tree]
-  (py/get-attr tree :feature_names))
+  (map symbol (py/get-attr tree :feature_names)))
 
 (defn get-threshold
   "Gets threshold at node in regression tree."
