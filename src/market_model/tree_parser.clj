@@ -139,15 +139,17 @@
     (str '(ns trees) "\n\n"
          ~(model->clj model feature-names))))
 
+         (defn gen-if [name threshold]
+           `(if (~'<= ~name ~threshold)
+              ~(+ 1 0)
+              (+ 1 1)))
+
 (spit "src/trees.clj"
       (str '(ns trees) "\n\n"
            `(~'defn ~'tree-0 ~'[foo bar baz]
               ~(gen-if 1 'foo))))
 (symbol "foo")
-(defn gen-if [name threshold]
-  `(if (~'<= ~'name ~threshold)
-     ~(+ 1 0)
-     (+ 1 1)))
+
 (gen-if 'foo 2)
 
 `('+ 2 2)
