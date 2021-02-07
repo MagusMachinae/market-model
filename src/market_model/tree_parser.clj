@@ -120,19 +120,19 @@
 
                        (get-tree-feature 0 (py/get-attr tree :tree_))))
 
-(for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
-                    y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
-                    :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
-                (get-tree-feature 0 (py/get-attr tree :tree_)))
+(dtype/make-container :java-array :long (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
+                                                 y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
+                                                 :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
+                                             (get-tree-feature 0 (py/get-attr tree :tree_))))
 
 (range 2)
-(dec)
+
 (model->clj mm/model (get-feature-names boston))
 
-(let [tree (mapv (fn [x] (py/get-item (py/get-attr mm/model :estimators_) [x 0])) (range 500))]
-  (mapv (fn [x] (get-tree-feature 0 x)) (mapv #(py/get-attr % :tree_) tree)))
+ (let [tree (mapv (fn [x] (py/get-item (py/get-attr mm/model :estimators_) [x 0])) (range 500))]
+                           (mapv (fn [x] (py/->py-long (get-tree-feature 0 x))) (mapv #(py/get-attr % :tree_) tree)))
 
-(walk-tree 0 (py/get-item (py/get-attr mm/model :estimators_) [0 0]))
+;(walk-tree 0 (py/get-item (py/get-attr mm/model :estimators_) [0 0]))
 
 (defn generate-trees!
   "Builds trees.clj from a source-file"
