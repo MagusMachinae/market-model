@@ -4,7 +4,7 @@
             [clojure-csv.core :as csv]))
 
 (def test-battery (map rest (csv/parse-csv (slurp "ext/validate_output.csv"))))
-(def feature-names (take 13 (first test-battery)))
+(def feature-names (map symbol (take 13 (first test-battery))))
 (def inputs (rest (map (fn [x] (map read-string (take 13 x))) test-battery)))
 (def expected-results (map read-string (map last (rest test-battery))))
 
