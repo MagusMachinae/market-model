@@ -56,22 +56,22 @@
   (py/get-attr tree :feature_names))
 
 (defn get-threshold
-  "Gets threshold at node in tree."
+  "Gets threshold at node in regression tree."
   [node tree]
   (py/get-item (py/get-attr tree :threshold) node))
 
 (defn get-children-left
-  "Gets left-child of node in tree."
+  "Gets left-child of node in regression tree."
   [node tree]
   (py/get-item (py/get-attr tree :children_left) node))
 
 (defn get-children-right
-  "Gets right-child of node in tree."
+  "Gets right-child of node in regression tree."
   [node tree]
   (py/get-item (py/get-attr tree :children_right) node))
 
 (defn get-tree-feature
-  "Gets feature at node in tree."
+  "Gets feature (scalar value representing either the name of the variable being checked, or the node type) at node in regression tree."
   [node tree]
   (py/get-item (py/get-attr tree :feature) node))
 
