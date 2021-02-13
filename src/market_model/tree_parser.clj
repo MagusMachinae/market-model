@@ -25,7 +25,8 @@
                 '[sklearn.metrics]
                 '[pickle :as pick]
                 '[io :as py-io]
-                '[builtins :as bi])
+                '[builtins :as bi]
+                '[sklearn.tree :as skltree])
 
 
 
@@ -116,6 +117,7 @@
 
 (comment
  (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
+ (bi/help (py/$..   skltree/_tree :Tree))
 
 
 
@@ -123,7 +125,7 @@
                      y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
                      :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
                  ((fn [x] (if
-                            (= x -2) (py/get-item (py/get-attr tree :value) 1)))
+                            (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1)))
                   (bi/int (get-tree-feature 1 (py/get-attr tree :tree_))))))
 
  (filter #(= -2 %))
@@ -131,7 +133,7 @@
  (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
        y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
          :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
-              (get-tree-feature 0 (py/get-attr tree :tree_)))
+              (get-children-left 3 (py/get-attr tree :tree_)))
 
  (range 2)
 
