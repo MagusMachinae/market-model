@@ -27,11 +27,7 @@
                 '[io :as py-io]
                 '[builtins :as bi]
                 '[sklearn.tree :as skltree])
-(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
-(def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
-                        y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
-                        :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
-                    (py/get-attr tree :tree_))))
+
 
 
 (defn features-from-file
@@ -118,8 +114,14 @@
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
+(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
+(def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+                        y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
+                        :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+                          (py/get-attr tree :tree_))))
+
 (comment
- (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
+ (spit "trees.edn" (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston)))
  (bi/help (py/$..   skltree/_tree :Tree))
 
 
