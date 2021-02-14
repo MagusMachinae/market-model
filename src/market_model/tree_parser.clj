@@ -15,18 +15,13 @@
 
 (initialize!)
 
-(require-python '[pandas :as pan]
-                '[numpy :as np]
-                '[numpy :as np]
+(require-python '[numpy :as np]
                 '[sklearn.datasets :as ds]
-                '[sklearn.ensemble]
-                '[sklearn.model_selection :as model-selection]
-                '[sklearn.inspection]
-                '[sklearn.metrics]
                 '[pickle :as pick]
                 '[io :as py-io]
                 '[builtins :as bi]
-                '[sklearn.tree :as skltree])
+                '[sklearn.tree :as skltree]
+                'os)
 
 
 
@@ -34,10 +29,6 @@
   "Creates a vector of feature names from a string representing a file path."
   [path]
   (mapv symbol (str/split-lines (slurp path))))
-
-(require-python 'os)
-(np/add [1 2 3] [2 2 2])
-(os/getcwd)
 
 (do (os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
   (require-python '[model :as mm])
@@ -114,11 +105,14 @@
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
-(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
+
+
 (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
                         y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
                         :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
                           (py/get-attr tree :tree_))))
+
+(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
 
 (comment
  (spit "trees.edn" (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston)))
