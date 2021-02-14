@@ -92,7 +92,7 @@
   [node tree feature-names]
   (if (not= (get-tree-feature node tree)
             -2)
-            (let [name (nth feature-names (bi/int (get-tree-feature node tree)))
+            (let [name (nth feature-names (get-tree-feature node tree))
                   threshold  (get-threshold node tree)]
               `(if (~'<= ~name ~threshold)
                   ~(walk-tree (get-children-left node tree)
