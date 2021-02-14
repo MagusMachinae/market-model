@@ -27,7 +27,7 @@
                 '[io :as py-io]
                 '[builtins :as bi]
                 '[sklearn.tree :as skltree])
-(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 213)))
+(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
 (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
                         y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
                         :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
@@ -70,17 +70,17 @@
 (defn get-children-left
   "Gets left-child of node in regression tree."
   [node tree]
-  (py/get-item (py/get-attr tree :children_left) node))
+  (bi/int (py/get-item (py/get-attr tree :children_left) node)))
 
 (defn get-children-right
   "Gets right-child of node in regression tree."
   [node tree]
-  (py/get-item (py/get-attr tree :children_right) node))
+  (bi/int (py/get-item (py/get-attr tree :children_right) node)))
 
 (defn get-tree-feature
   "Gets feature (scalar value representing either the name of the variable being checked, or the node type) at node in regression tree."
   [node tree]
-  (py/get-item (py/get-attr tree :feature) node))
+  (bi/int (py/get-item (py/get-attr tree :feature) node)))
 
 
 (class (first (drop  100 (py/get-attr boston :target))))
@@ -137,6 +137,8 @@
                    nil)
  (filter #(= -2 %))
  (py/->jvm )
+ (bi/int (get-tree-feature 0 tree0))
+ (get-children-left 0 tree0)
  (filter (fn [x] (= -1 x)) (map bi/int (flatten (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
                                                              y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
                                                              :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
