@@ -27,7 +27,7 @@
                 '[io :as py-io]
                 '[builtins :as bi]
                 '[sklearn.tree :as skltree])
-
+(def tree0 '(12 5 7 -2 5 5 2 8 -2 7 10 -2 -2 5 -2 -2 -2 9 -2 12 2 2 -2 -2 -2 0 1 -2 -2 9 -2 -2 5 0 7 8 -2 -2 1 -2 -2 2 -2 6 -2 6 -2 -2 7 9 6 6 -2 -2 -2 -2 11 2 0 -2 ))
 
 
 
@@ -87,18 +87,18 @@
   Every node is checked for whether the value is undefined (ie. the value of the node is -2). If it is,
   the value is returned for that node. Otherwise, walk-tree is recursively called."
   [node tree feature-names]
-  (let [name (nth feature-names (bi/int (get-tree-feature node tree)))
-        threshold  (get-threshold node tree)]
-    (if (not= (get-tree-feature node tree)
-              -2)
-      `(if (~'<= ~name ~threshold)
-         ~(walk-tree (get-children-left node tree)
-                    tree
-                    feature-names)
-         ~(walk-tree (get-children-right node tree)
-                    tree
-                    feature-names))
-      (py/get-item (py/get-attr tree :value) node))))
+  (if (not= (get-tree-feature node tree)
+            (or -1 -2))
+            (let [name (nth feature-names (bi/int (get-tree-feature node tree)))
+                  threshold  (get-threshold node tree)]
+              `(if (~'<= ~name ~threshold)
+                  ~(walk-tree (get-children-left node tree)
+                              tree
+                              feature-names)
+                  ~(walk-tree (get-children-right node tree)
+                              tree
+                              feature-names)))
+    (py/get-item (py/get-attr tree :value) node)))
 
 (defn decision-tree->s-exps
   "Converts a decision tree into a clojure function definition by recursing over its nodes."
@@ -121,19 +121,23 @@
 
 
 
- (filter some? (for [x (range (py/get-item   (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+ (for [x (range (py/get-item   (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
                      y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
                      :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
                  ((fn [x] (if
-                            (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1)))
-                  (bi/int (get-tree-feature 1 (py/get-attr tree :tree_))))))
-
+                            (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1))
+                             (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
+                  (bi/int (get-tree-feature 1 (py/get-attr tree :tree_)))))
+                  ((fn [x] (if
+                             (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1))
+                              (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
+                   nil)
  (filter #(= -2 %))
  (py/->jvm )
- (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
-       y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
-         :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
-              (get-children-left 3 (py/get-attr tree :tree_)))
+ (filter (fn [x] (= -1 x)) (map bi/int (flatten (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+                                                             y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
+                                                             :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+                                                         (map (fn [x] (get-tree-feature x (py/get-attr tree :tree_))) (range)))))))
 
  (range 2)
 
