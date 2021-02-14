@@ -27,8 +27,11 @@
                 '[io :as py-io]
                 '[builtins :as bi]
                 '[sklearn.tree :as skltree])
-(def tree0 '(12 5 7 -2 5 5 2 8 -2 7 10 -2 -2 5 -2 -2 -2 9 -2 12 2 2 -2 -2 -2 0 1 -2 -2 9 -2 -2 5 0 7 8 -2 -2 1 -2 -2 2 -2 6 -2 6 -2 -2 7 9 6 6 -2 -2 -2 -2 11 2 0 -2 ))
-
+(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 213)))
+(def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+                        y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
+                        :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+                    (py/get-attr tree :tree_))))
 
 
 (defn features-from-file
@@ -88,7 +91,7 @@
   the value is returned for that node. Otherwise, walk-tree is recursively called."
   [node tree feature-names]
   (if (not= (get-tree-feature node tree)
-            (or -1 -2))
+            -2)
             (let [name (nth feature-names (bi/int (get-tree-feature node tree)))
                   threshold  (get-threshold node tree)]
               `(if (~'<= ~name ~threshold)
@@ -140,7 +143,9 @@
                                                          (map (fn [x] (get-tree-feature x (py/get-attr tree :tree_))) (range)))))))
 
  (range 2)
-
+ (map (fn [x] (get-tree-feature x tree0)) (range 213))
+ (py/get-attr tree0 :node_count)
+(walk-tree 0 tree0 (get-feature-names boston))
  (model->clj mm/model (get-feature-names boston))
 
  (let [tree (mapv (fn [x] (py/get-item (py/get-attr mm/model :estimators_) [x 0])) (range 500))]
