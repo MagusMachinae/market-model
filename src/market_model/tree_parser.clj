@@ -103,20 +103,26 @@
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
+(defn generate-trees.edn!
+  [model feature-names path]
+  (spit path ))
 
 
-(def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
-                        y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
-                        :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
-                          (py/get-attr tree :tree_))))
 
-(def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
+
 
 (comment
- (spit "trees.edn" (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston)))
+ (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
+                        (interpose "\n\n")
+                        (apply str)))
  (bi/help (py/$..   skltree/_tree :Tree))
+(first (read-string (slurp "trees.edn")))
+ (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
+                         y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
+                         :let  [tree (py/get-item (py/get-attr mm/model :estimators_) [x y])]]
+                           (py/get-attr tree :tree_))))
 
-
+ (def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
 
  (for [x (range (py/get-item   (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
                      y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
