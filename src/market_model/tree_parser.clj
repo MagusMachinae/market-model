@@ -92,7 +92,7 @@
   "Converts a decision tree into a clojure function definition by recursing over its nodes."
   [tree feature-names]
   (let [tree (py/get-attr tree :tree_)]
-    `(~'defn ~'decision-tree [~@feature-names]
+    `(~'fn [~@feature-names]
        ~(walk-tree 0 tree feature-names))))
 
 (defn model->clj
