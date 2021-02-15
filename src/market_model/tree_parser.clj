@@ -19,7 +19,7 @@
                 '[sklearn.datasets :as ds]
                 '[pickle :as pick]
                 '[io :as py-io]
-                '[builtins :as bi]
+                '[builtins :as python]
                 '[sklearn.tree :as skltree]
                 'os)
 
@@ -57,17 +57,17 @@
 (defn get-children-left
   "Gets left-child of node in regression tree."
   [node tree]
-  (bi/int (py/get-item (py/get-attr tree :children_left) node)))
+  (python/int (py/get-item (py/get-attr tree :children_left) node)))
 
 (defn get-children-right
   "Gets right-child of node in regression tree."
   [node tree]
-  (bi/int (py/get-item (py/get-attr tree :children_right) node)))
+  (python/int (py/get-item (py/get-attr tree :children_right) node)))
 
 (defn get-tree-feature
   "Gets feature (scalar value representing either the name of the variable being checked, or the node type) at node in regression tree."
   [node tree]
-  (bi/int (py/get-item (py/get-attr tree :feature) node)))
+  (python/int (py/get-item (py/get-attr tree :feature) node)))
 
 
 (class (first (drop  100 (py/get-attr boston :target))))
