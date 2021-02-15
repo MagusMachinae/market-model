@@ -30,9 +30,7 @@
   [path]
   (mapv symbol (str/split-lines (slurp path))))
 
-(do (os/chdir "/home/magusmachinae/Documents/Programming/market-model/src/market_model")
-  (require-python '[model :as mm])
-  (os/chdir "/home/magusmachinae/Documents/Programming/market-model"))
+
 
 (def boston (ds/load_boston))
 
