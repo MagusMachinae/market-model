@@ -105,17 +105,13 @@
 
 (defn generate-trees.edn!
   [model feature-names path]
-  (spit path ))
-
-
-
-
+  (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
+                         (interpose "\n\n")
+                         (apply str))))
 
 (comment
- (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
-                        (interpose "\n\n")
-                        (apply str)))
- (bi/help (py/$..   skltree/_tree :Tree))
+
+ (python/help (py/$..   skltree/_tree :Tree))
 (first (read-string (slurp "trees.edn")))
  (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 0))
                          y (range  (py/get-item (py/get-attr (py/get-attr mm/model :estimators_) :shape) 1))
