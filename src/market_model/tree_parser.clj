@@ -42,10 +42,10 @@
 (un-pickle "ext/gbm_model.pickle")
 
 (defn get-feature-names
-  "Returns a collection of feature names from a python object as Clojure symbols.
-  Intended for interop use to get collection of variable names used to build name nodes in regression tree."
-  [tree]
-  (map symbol (str/lower-case (py/get-attr tree :feature_names))))
+  "Returns a collection of feature names from a python object (presumably a dataset) as Clojure symbols.
+  Intended for interop use to get collection of variable names used to build named nodes in regression tree."
+  [data-set]
+  (map symbol (map str/lower-case (py/get-attr data-set :feature_names))))
 
 (defn get-threshold
   "Gets threshold at node in regression tree."
