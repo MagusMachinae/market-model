@@ -28,10 +28,10 @@
 (defn features-from-file
   "Creates a vector of feature names from a string representing a file path."
   [path]
-  (mapv symbol (str/split-lines (slurp path))))
+  (mapv symbol (str/lower-case (str/split-lines (slurp path)))))
 
 
-
+(+ 2 2)
 (def boston (ds/load_boston))
 
 (defn un-pickle
@@ -42,10 +42,10 @@
 (un-pickle "ext/gbm_model.pickle")
 
 (defn get-feature-names
-  "Returns a collection of feature names from the data set as Clojure symbols.
+  "Returns a collection of feature names from a python object as Clojure symbols.
   Intended for interop use to get collection of variable names used to build name nodes in regression tree."
   [tree]
-  (map symbol (py/get-attr tree :feature_names)))
+  (map symbol (str/lower-case (py/get-attr tree :feature_names))))
 
 (defn get-threshold
   "Gets threshold at node in regression tree."
