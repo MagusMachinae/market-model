@@ -63,9 +63,16 @@
   (python/int (py/get-item (py/get-attr tree :children_right) node)))
 
 (defn get-tree-feature
-  "Gets feature (scalar value representing either the name of the variable being checked, or the node type) at node in regression tree."
+  "Gets feature (scalar value representing either the name of the variable being
+  checked, or the node type) at node in regression tree."
   [node tree]
   (python/int (py/get-item (py/get-attr tree :feature) node)))
+
+(defn get-node-value
+  "Called when a tree-feature in walk-tree returns a negative number to
+grab the numpy array at that leaf and extract the float stored in it."
+  [node tree]
+  (first (first (py/get-item (py/get-attr tree :value) node))))
 
 
 (class (first (drop  100 (py/get-attr boston :target))))
@@ -86,7 +93,7 @@
                   ~(walk-tree (get-children-right node tree)
                               tree
                               feature-names)))
-    (py/get-item (py/get-attr tree :value) node)))
+              (get-node-value node tree)))
 
 (defn decision-tree->s-exps
   "Converts a decision tree into a clojure function definition by recursing over its nodes."
