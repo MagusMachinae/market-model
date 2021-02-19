@@ -74,9 +74,6 @@ grab the numpy array at that leaf and extract the float stored in it."
   [node tree]
   (first (first (py/get-item (py/get-attr tree :value) node))))
 
-
-(class (first (drop  100 (py/get-attr boston :target))))
-
 (defn walk-tree
   "Walks over the tree, constructing the if statement representing the node in the decision tree.
   Every node is checked for whether the value is undefined (ie. the value of the node is -2). If it is,
@@ -110,7 +107,7 @@ grab the numpy array at that leaf and extract the float stored in it."
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names)))
 
-(defn generate-trees.edn!
+(defn into-edn-trees!
   [model feature-names path]
   (spit path (->> (model->clj model feature-names)
                          (interpose "\n\n")
