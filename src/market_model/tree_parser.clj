@@ -36,7 +36,8 @@
 (def boston (ds/load_boston))
 
 (defn un-pickle
-  "Takes a string of the relative location of the python file containing the model and returns the python object stored in pickle."
+  "Takes a string of the relative location of the python file containing the
+model and returns the python object stored in pickle."
   [file]
   (pick/load (py-io/open file "rb")))
 
