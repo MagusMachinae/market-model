@@ -8,7 +8,6 @@
   "Runs regression models over input. Takes a filepath of the location of trees.edn"
   [path [data-set]]
   (r/fold + (r/map (fn [f] (f data-set)))))
-(keys (ns-publics 'trees))
 
 
 
