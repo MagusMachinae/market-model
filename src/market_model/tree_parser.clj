@@ -97,10 +97,12 @@ all values into factors of powers of ten."
         `(if (~'<= ~name ~threshold)
             ~(walk-tree (get-children-left node tree)
                         tree
-                        feature-names)
+                        feature-names
+                        precision)
             ~(walk-tree (get-children-right node tree)
                         tree
-                        feature-names)))
+                        feature-names
+                        precision)))
       (truncator (get-node-value node tree) precision)))
 
 (defn decision-tree->s-exps
@@ -170,7 +172,8 @@ all values into factors of powers of ten."
  (range 2)
  (map (fn [x] (get-tree-feature x tree0)) (range 213))
  (py/get-attr tree0 :node_count)
-(walk-tree 0 tree0 (get-feature-names boston))
+ (get-node-value 3 tree0)
+ (walk-tree 0 tree0 (get-feature-names boston))
  (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
 
  (let [tree (mapv (fn [x] (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x 0])) (range 500))]
