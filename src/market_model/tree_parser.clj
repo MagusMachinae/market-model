@@ -21,8 +21,8 @@
                 '[pickle :as pick]
                 '[io :as py-io]
                 '[builtins :as python]
-                '[sklearn.tree :as skltree]
-                )
+                '[sklearn.tree :as skltree])
+
 
 
 
@@ -74,6 +74,15 @@
 grab the numpy array at that leaf and extract the float stored in it."
   [node tree]
   (first (first (py/get-item (py/get-attr tree :value) node))))
+
+(defn truncator
+  "Tree contains values in both scientific notation and standard floats.
+cl-format needs to be switched on the value to avoid unnecesarily converting
+all values into factors of powers of ten."
+  [val precision]
+  (if  (< val .001)
+    (cl-format nil (str "~," precision "E") val)
+    (cl-format nil (str "~," precision "f") val)))
 
 (defn walk-tree
   "Walks over the tree, constructing the if statement representing the node in the decision tree.
