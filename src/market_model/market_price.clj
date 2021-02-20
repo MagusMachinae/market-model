@@ -3,6 +3,7 @@
             [clojure.repl :as repl]
             [market-model.core-test :as t]))
 
+(def funcs (read-string (slurp "trees.edn")))
 
 (defn derive-market-price
   "Runs regression models over input. Takes a filepath of the location of trees.edn"
@@ -11,16 +12,34 @@
 
 
 
-(time (r/fold + (r/map (fn [x] (* 2 x)) (into [] (range 100000)))))
+
+(time (doall  (pmap (fn [args] (r/fold + (r/map (fn [f] (apply (eval f) args))
+                                                (read-string (slurp "trees.edn") ))))
+                    (pmap (fn [coll] (into [] coll)) t/inputs))))
+
+(into [] (r/map (fn [f] (apply (eval f) (into [] (first t/inputs))))
+                (read-string (str "[" (slurp "ext/trees.edn") "]"))))
+
+(time (r/fold + (r/map (fn [f] (apply (eval f) (into [] (first t/inputs))))
+                       (read-string (slurp "trees.edn") ))))
+
 (time (reduce + (map (fn [x] (* 2 x)) (into [] (range 100000)))))
 (time (reduce +
               (map
                (fn [f] (apply (eval f) (into [] (first t/inputs))))
-               (read-string (str "[" (slurp "trees.edn") "]")))))
+               (read-string (slurp "trees.edn")))))
+(time (r/reduce +
+                          (pmap
+                           (fn [f] (apply (eval f)  (first t/inputs)))
+                           funcs)))
+(time (read-string (slurp "trees.edn")))
+
+(time (doall (pmap
+         (fn [f] (apply (eval f)  (first t/inputs)))
+         (read-string (slurp "trees.edn")))))
+
 (def func (first (read-string (str "[" (slurp "trees.edn") "]"))))
 (class (fn [x] (+ x x)))
 (eval func)
 
 (apply (first (read-string (str "[" (slurp "trees.edn") "]"))) (first t/inputs))
-
-((fn [foo] (+ 2 foo)) 1 2 3 4)
