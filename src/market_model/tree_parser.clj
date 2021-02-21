@@ -124,16 +124,11 @@ places specified by precision."
                   (interpose "\n\n")
                   (apply str))))
 
-
-(cl-format nil "~,2E" -4.313547135481599E-4)
-(cl-format nil "~,2E" 374.2200012207031)
-
-
 (comment
  (into-edn-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn")
  (python/help (py/$..   skltree/_tree :Tree))
  (first (read-string (slurp "trees.edn")))
- (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
+ (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) 2)
                         (interpose "\n\n")
                         (apply str)
                         ((fn [data-string] (str "[" data-string "]")))))
