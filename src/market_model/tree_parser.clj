@@ -120,7 +120,7 @@ places specified by precision."
 
 (defn into-edn-trees!
   [model feature-names path precision]
-  (spit path (->> (model->clj model feature-names precision)
+  (spit path (->> (model->clj model feature-names (dec precision))
                   (interpose "\n\n")
                   (apply str))))
 
@@ -165,7 +165,7 @@ places specified by precision."
  (range 2)
  (map (fn [x] (get-tree-feature x tree0)) (range 213))
  (py/get-attr tree0 :node_count)
- (get-node-value 3 tree0)
+ (truncate (get-node-value 3 tree0) 3)
  (walk-tree 0 tree0 (get-feature-names boston))
  (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
 
