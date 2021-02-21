@@ -1,6 +1,9 @@
 (ns market-model.tree-parser
   (:require [libpython-clj.require :refer [require-python]]
-            [libpython-clj.python :as py :refer [initialize!]]
+            [libpython-clj.python :as py :refer [initialize!
+                                                 get-attr
+                                                 call-attr
+                                                 get-item]]
             [clojure.string :as str]
             [clojure.pprint :refer [cl-format]]))
 
@@ -8,6 +11,7 @@
 
 (require-python '[sklearn.datasets :as ds]
                 '[pickle :as pick]
+                '[io :as py-io]
                 '[builtins :as python]
                 '[sklearn.tree :as skltree])
 
@@ -118,6 +122,8 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 (comment
  (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 15)
  (python/help (py/$..   skltree/_tree :Tree))
+
+ (py/call-attr (un-pickle "ext/gbm_model.pickle") "predict" [0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861])
  (first (read-string (slurp "trees.edn")))
  (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) 2)
                         (interpose "\n\n")
