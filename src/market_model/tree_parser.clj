@@ -32,8 +32,9 @@ model and returns the python object stored in pickle."
 (un-pickle "ext/gbm_model.pickle")
 
 (defn get-feature-names
-  "Returns a collection of feature names from a python object (presumably a dataset) as Clojure symbols.
-  Intended for interop use to get collection of variable names used to build named nodes in regression tree."
+  "Returns a collection of feature names from a python object (presumably a
+dataset) as Clojure symbols. Intended for interop use to get collection of
+variable names used to build named nodes in regression tree."
   [data-set]
   (map symbol (map str/lower-case (py/get-attr data-set :feature_names))))
 
@@ -72,9 +73,10 @@ places specified by precision."
   (cl-format nil (str "~," precision "E") val))
 
 (defn walk-tree
-  "Walks over the decision tree, constructing the if statement representing the node in the decision tree.
-  Every node is checked for whether the value is undefined (ie. the value of the node is -2). If it is,
-  the value is returned for that node. Otherwise, walk-tree is recursively called."
+  "Walks over the decision tree, constructing the if statement representing the
+ node in the decision tree.Every node is checked for whether the value is
+undefined (ie. the value of the node is -2). If it is, the value is returned for
+ that node. Otherwise, walk-tree is recursively called."
   [node tree feature-names precision]
   (if (not= (get-tree-feature node tree)
             -2)
@@ -113,7 +115,7 @@ places specified by precision."
                   (apply str))))
 
 (comment
- (into-edn-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn")
+ (into-edn-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 3)
  (python/help (py/$..   skltree/_tree :Tree))
  (first (read-string (slurp "trees.edn")))
  (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) 2)
