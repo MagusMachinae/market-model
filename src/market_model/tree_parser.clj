@@ -1,25 +1,13 @@
 (ns market-model.tree-parser
   (:require [libpython-clj.require :refer [require-python]]
-            [libpython-clj.python :as py :refer [as-python
-                                                 as-jvm
-                                                 ->python
-                                                 ->jvm
-                                                 get-attr
-                                                 call-attr
-                                                 get-item
-                                                 initialize!
-                                                 call-kw]]
-            [clojure.java.io :as io]
+            [libpython-clj.python :as py :refer [initialize!]]
             [clojure.string :as str]
-            [tech.v3.datatype :as dtype]
             [clojure.pprint :refer [cl-format]]))
 
 (initialize!)
 
-(require-python '[numpy :as np]
-                '[sklearn.datasets :as ds]
+(require-python '[sklearn.datasets :as ds]
                 '[pickle :as pick]
-                '[io :as py-io]
                 '[builtins :as python]
                 '[sklearn.tree :as skltree])
 
@@ -32,7 +20,7 @@
   (mapv symbol (str/lower-case (str/split-lines (slurp path)))))
 
 
-(+ 2 2)
+
 (def boston (ds/load_boston))
 
 (defn un-pickle
