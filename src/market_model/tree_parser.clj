@@ -108,14 +108,15 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
         :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
     (decision-tree->s-exps tree feature-names precision)))
 
-(defn into-edn-trees!
+(defn into-file-trees!
   [model feature-names path precision]
   (spit path (->> (model->clj model feature-names (dec precision))
                   (interpose "\n\n")
-                  (apply str))))
+                  (apply str)
+                  ((fn [data-string] (str "[" data-string "]"))))))
 
 (comment
- (into-edn-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 3)
+ (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 15)
  (python/help (py/$..   skltree/_tree :Tree))
  (first (read-string (slurp "trees.edn")))
  (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) 2)
