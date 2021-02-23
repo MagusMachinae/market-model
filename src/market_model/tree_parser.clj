@@ -120,10 +120,16 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
                   ((fn [data-string] (str "[" data-string "]"))))))
 
 (comment
- (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 15)
+ (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 3)
  (python/help (py/$..   skltree/_tree :Tree))
-
- (py/call-attr (un-pickle "ext/gbm_model.pickle") "predict" [0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861])
+ (python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") :_raw_predict_init))
+ (py/att-type-map (un-pickle "ext/gbm_model.pickle"))
+ (py/call-attr (un-pickle "ext/gbm_model.pickle") "_raw_predict_init" [[0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861]])
+ (python/help "predict")
+ (py/get-attr (un-pickle "ext/gbm_model.pickle") "init")
+ (apply (eval tree0) [0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861])
+ (take 20 (py/get-attr boston "data"))
+ (py/call-attr (un-pickle "ext/gbm_model.pickle") "predict" [[0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861]])
  (first (read-string (slurp "trees.edn")))
  (spit "trees.edn" (->> (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) 2)
                         (interpose "\n\n")
@@ -135,60 +141,60 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
  (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
                          y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
                          :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
-                        (py/get-attr tree :tree_))))
+                     (decision-tree->s-exps tree (get-feature-names boston) 2))))
 
  (def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
 
  (for [x (range (py/get-item   (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
-         y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
-           :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
-      ((fn [x] (if
-                 (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1))
-               (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
-       (bi/int (get-tree-feature 1 (py/get-attr tree :tree_)))))
+       y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
+       :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
+   ((fn [x] (if
+              (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1))
+      (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
+    (bi/int (get-tree-feature 1 (py/get-attr tree :tree_)))))
  ((fn [x] (if
             (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1))
-          (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
+    (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
   nil)
  (filter #(= -2 %))
  (py/->jvm)
  (bi/int (get-tree-feature 0 tree0))
- (get-children-left 0 tree0)
- (filter (fn [x] (= -1 x)) (map bi/int (flatten (first (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
-                                                             y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
-                                                             :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
-                                                         (map (fn [x] (get-tree-feature x (py/get-attr tree :tree_))) (range)))))))
+ (get-children-left 0 tree0))
+(filter (fn [x] (= -1 x)) (map bi/int (flatten (first (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
+                                                            y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
+                                                            :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
+                                                        (map (fn [x] (get-tree-feature x (py/get-attr tree :tree_))) (range)))))))
 
- (range 2)
- (map (fn [x] (get-tree-feature x tree0)) (range 213))
- (py/get-attr tree0 :node_count)
- (truncate (get-node-value 3 tree0) 3)
- (walk-tree 0 tree0 (get-feature-names boston))
- (model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
+(range 2)
+(map (fn [x] (get-tree-feature x tree0)) (range 213))
+(py/get-attr tree0 :node_count)
+(truncate (get-node-value 3 tree0) 3)
+(walk-tree 0 tree0 (get-feature-names boston))
+(model->clj (un-pickle "ext/gbm_model.pickle") (get-feature-names boston))
 
- (let [tree (mapv (fn [x] (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x 0])) (range 500))]
-   (mapv (fn [x]  (get-tree-feature 0 x)) (mapv #(py/get-attr % :tree_) tree)))
+(let [tree (mapv (fn [x] (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x 0])) (range 500))]
+  (mapv (fn [x]  (get-tree-feature 0 x)) (mapv #(py/get-attr % :tree_) tree)))
 
- (walk-tree 0 (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [0 0]))
+(walk-tree 0 (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [0 0]))
 
- (defn generate-trees!
-   "Builds trees.clj from a source-file"
-   [model feature-names]
-   (spit "src/trees.clj"
-         (str '(ns trees) "\n\n"
-              (model->clj model feature-names))))
+(defn generate-trees!
+  "Builds trees.clj from a source-file"
+  [model feature-names]
+  (spit "src/trees.clj"
+        (str '(ns trees) "\n\n"
+             (model->clj model feature-names))))
 
- (defn gen-if [name threshold]
-   `(if (~'<= ~name ~threshold)
-      ~(+ 1 0)
-      (+ 1 1)))
+(defn gen-if [name threshold]
+  `(if (~'<= ~name ~threshold)
+     ~(+ 1 0)
+     (+ 1 1)))
 
- (spit "src/trees.clj"
-       (str '(ns trees) "\n\n"
-            `(~'defn ~'tree-0 ~'[foo bar baz]
-               ~(gen-if 1 'foo))))
- (symbol "foo")
+(spit "src/trees.clj"
+      (str '(ns trees) "\n\n"
+           `(~'defn ~'tree-0 ~'[foo bar baz]
+              ~(gen-if 1 'foo))))
+(symbol "foo")
 
- (gen-if 'foo 2)
+(gen-if 'foo 2)
 
- `('+ 2 2))
+`('+ 2 2)
