@@ -13,25 +13,28 @@
 
 
 
-(time (doall  (pmap (fn [args] (r/fold + (r/map (fn [f] (apply (eval f) args))
-                                                (read-string (slurp "ext/trees.edn") ))))
+(time (doall  (pmap (fn [args] (+ 22.58793103 (* 0.1 (r/fold +
+                                                             (r/map (fn [f] (apply (eval f) args)
+                                                                      )
+                                                                    funcs)))))
                     (pmap (fn [coll] (into [] coll)) t/inputs))))
 
 (into [] (r/map (fn [f] (apply (eval f) (into [] (first t/inputs))))
-                (read-string  (slurp "ext/trees.edn") )))
+                (read-string  (slurp "ext/trees.edn"))))
 
-(time (r/fold + (r/map (fn [f] (apply (eval f) (into [] (first t/inputs))))
-                       (read-string (slurp "ext/trees.edn") ))))
+(time (+ 22.58793103 (* 0.1 (r/fold + (r/map (fn [f] (apply (eval f) (into [] (first t/inputs))))
+                                             (read-string (slurp "ext/trees.edn")))))))
 
 (time (reduce + (map (fn [x] (* 2 x)) (into [] (range 100000)))))
 (time (reduce +
-              (map
-               (fn [f] (apply (eval f) (into [] (first t/inputs))))
-               (read-string (slurp "trees.edn")))))
-(time (r/reduce +
-                          (pmap
-                           (fn [f] (apply (eval f)  (first t/inputs)))
-                           funcs)))
+              (map (fn [x] (* 0.1 x)) )(map
+                                        (fn [f] (apply (eval f) (into [] (first t/inputs))))
+                                        (read-string (slurp "trees.edn")))))
+(time (/ (r/reduce +
+                   (pmap
+                    (fn [f] (apply (eval f)  (first t/inputs)))
+                    funcs))
+         500))
 (time (read-string (slurp "ext/trees.edn")))
 
 (time (doall (pmap
