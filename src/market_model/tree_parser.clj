@@ -21,8 +21,7 @@
 (defn features-from-file
   "Creates a vector of feature names from a string representing a file path."
   [path]
-  (mapv symbol (str/lower-case (str/split-lines (slurp path)))))
-
+  (mapv symbol (map str/lower-case (str/split-lines (slurp path)))))
 
 
 (def boston (ds/load_boston))
