@@ -1,6 +1,14 @@
 (ns market-model.util
   (:require [tick.alpha.api :as tick]
-            [clojure.math.numeric-tower :as math]))
+            [clojure.math.numeric-tower :as math]
+            [clojure.pprint :refer [cl-format]]))
+
+(defn truncate
+  "Converts value to exponential notation and rounds it to number of decimal
+places specified by precision."
+  [val precision]
+  (cl-format nil (str "~," precision "E") val))
+
 
 (defn time-quotient
   [date-1 date-2 scale]

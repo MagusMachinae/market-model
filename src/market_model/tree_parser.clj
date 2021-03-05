@@ -5,7 +5,7 @@
                                                  call-attr
                                                  get-item]]
             [clojure.string :as str]
-            [clojure.pprint :refer [cl-format]]))
+            [market-model.util :as mm-util]))
 
 (initialize!)
 
@@ -68,13 +68,6 @@ grab the numpy array at that leaf and extract the float stored in it."
   [node tree]
   (first (first (py/get-item (py/get-attr tree :value) node))))
 
-(defn truncate
-  "Converts value to exponential notation and rounds it to number of decimal
-places specified by precision."
-  [val precision]
-
-  (cl-format nil (str "~," precision "E") val))
-
 (defn walk-tree
   "Walks over the decision tree, constructing the if statement representing the
  node in the decision tree.Every node is checked for whether the value is
@@ -84,7 +77,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
   (if (not= (get-tree-feature node tree)
             -2)
       (let [name (nth feature-names (get-tree-feature node tree))
-            threshold  (read-string (truncate (get-threshold node tree) precision))]
+            threshold  (read-string (mm-util/truncate (get-threshold node tree) precision))]
         `(if (~'<= ~name ~threshold)
             ~(walk-tree (get-children-left node tree)
                         tree
@@ -94,7 +87,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
                         tree
                         feature-names
                         precision)))
-      (read-string (truncate (get-node-value node tree) precision))))
+      (read-string (mm-util/truncate (get-node-value node tree) precision))))
 
 (defn decision-tree->s-exps
   "Converts a decision tree into a clojure function definition by recursing over its nodes."
