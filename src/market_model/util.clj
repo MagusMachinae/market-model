@@ -1,4 +1,4 @@
-(ns market-model.utils
+(ns market-model.util
   (:require [tick.alpha.api :as tick]
             [clojure.math.numeric-tower :as math]))
 
