@@ -2,6 +2,12 @@
   (:require [tick.alpha.api :as tick]
             [clojure.math.numeric-tower :as math]))
 
+(defn time-quotient
+  [date-1 date-2 scale]
+  (tick/divide
+    (tick/duration (tick/new-interval date-1 date-2))
+    (tick/new-duration 1 scale)))
+
 (defn time-since
   [date1 date2 options]
   (if (true? (get options :abs))
