@@ -6,7 +6,7 @@
 (defn truncate
   "Converts value to exponential notation and rounds it to number of decimal
 places specified by precision."
-  [val precision]
+  [precision val]
   (cl-format nil (str "~," precision "E") val))
 
 
