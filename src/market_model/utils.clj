@@ -24,10 +24,6 @@
               (rest stack))
        (furthest-value-from fixed-point arg-1 arg-2)))))
 
-(furthest-value-from 2 5 -10 -2 -100)
-(seq '())
-(if nil
-  1
-  2)
-(map (fn [x] (math/abs (- x 2))) '(5 -10))
-(apply > (map (fn [x] (math/abs (- x 2))) '(5 -10)))
+(comment (furthest-value-from 2 5 -10 -2 -50 65)
+         (map (fn [x] (math/abs (- x 2))) '(5 -10))
+         (apply > (map (fn [x] (math/abs (- x 2))) '(5 -10))))
