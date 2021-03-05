@@ -4,9 +4,11 @@
 
 (defn time-quotient
   [date-1 date-2 scale]
-  (tick/divide
-    (tick/duration (tick/new-interval date-1 date-2))
-    (tick/new-duration 1 scale)))
+  (cond (= scale :days)   (tick/divide
+                            (tick/duration (tick/new-interval date-1 date-2))
+                            (tick/new-duration 1 scale))
+        (= scale :months) (float (/ (time-quotient date-1 date-2 :days) (/ 365.24 12)))
+        (= scale :years)  (float (/ (time-quotient date-1 date-2 :days) 365.24))))
 
 (defn time-since
   [date-1 date-2 options]
