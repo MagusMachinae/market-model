@@ -9,10 +9,19 @@
     (tick/new-duration 1 scale)))
 
 (defn time-since
-  [date1 date2 options]
-  (if (true? (get options :abs))
-    (math/abs (time-since date1 date2 (update options :abs (fn [_] false))))
-    (normalised-time-quotient date1 date2 options)))
+  [date-1 date-2 options]
+  (let [date-1 (tick/date date-1)
+        date-2 (tick/date date-2)]
+    (cond (false? (tick/< [date-1 date-2])) (- (time-since date-2
+                                                           date-1
+                                                           options))
+          (true? (:abs options)) (math/abs (time-since date-1
+                                                       date-2
+                                                       (update
+                                                         options
+                                                         :abs
+                                                         (fn [_] false))))
+      :else (time-quotient date-1 date-2 (:time-scale options)))))
 
 (tick/divide )
 (tick/new-interval (tick/now) (tick/<< (tick/now) (tick/new-period 1 :years)))
