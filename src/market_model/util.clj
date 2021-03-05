@@ -9,6 +9,10 @@ places specified by precision."
   [precision val]
   (cl-format nil (str "~," precision "E") val))
 
+(defn truncate-float
+  "Truncates decimal places"
+  [precision val]
+  (cl-format nil (str "~," precision "F") val))
 
 (defn time-quotient
   [date-1 date-2 scale]
