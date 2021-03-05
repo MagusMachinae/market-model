@@ -3,7 +3,10 @@
             [clojure.math.numeric-tower :as math]))
 
 (defn time-since
-  [date options])
+  [date1 date2 options]
+  (if (true? (get options :abs))
+    (math/abs (time-since date1 date2 (update options :abs (fn [_] false))))
+    (normalised-time-quotient date1 date2 options)))
 
 (tick/divide )
 (tick/new-interval (tick/now) (tick/<< (tick/now) (tick/new-period 1 :years)))
