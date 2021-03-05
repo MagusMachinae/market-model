@@ -19,8 +19,14 @@ places specified by precision."
   (cond (= scale :days)   (tick/divide
                             (tick/duration (tick/new-interval date-1 date-2))
                             (tick/new-duration 1 scale))
-        (= scale :months) (float (/ (time-quotient date-1 date-2 :days) (/ 365.24 12)))
-        (= scale :years)  (float (/ (time-quotient date-1 date-2 :days) 365.24))))
+        (= scale :months) (->> (/ 365.24 12)
+                               (/ (time-quotient date-1 date-2 :days) )
+                               (truncate-float 2)
+                               (read-string))
+        (= scale :years)  (->> 365.24
+                               (/ (time-quotient date-1 date-2 :days) )
+                               (truncate-float 2)
+                               (read-string))))
 
 (defn time-since
   [date-1 date-2 options]
@@ -37,9 +43,7 @@ places specified by precision."
                                                          (fn [_] false))))
       :else (time-quotient date-1 date-2 (:time-scale options)))))
 
-(tick/divide )
-(tick/new-interval (tick/now) (tick/<< (tick/now) (tick/new-period 1 :years)))
-(tick/year 2020)
+(time-since "2000-08-01" "2021-01-01" {:abs false :time-scale :months})
 
 (defn furthest-value-from
   ([fixed-point val-a val-b]
