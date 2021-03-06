@@ -77,7 +77,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
   (if (not= (get-tree-feature node tree)
             -2)
       (let [name (nth feature-names (get-tree-feature node tree))
-            threshold  (read-string (mm-util/truncate (get-threshold node tree) precision))]
+            threshold  (read-string (mm-util/truncate precision (get-threshold node tree)))]
         `(if (~'<= ~name ~threshold)
             ~(walk-tree (get-children-left node tree)
                         tree
@@ -87,7 +87,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
                         tree
                         feature-names
                         precision)))
-      (read-string (mm-util/truncate (get-node-value node tree) precision))))
+      (read-string (mm-util/truncate precision (get-node-value node tree)))))
 
 (defn decision-tree->s-exps
   "Converts a decision tree into a clojure function definition by recursing over its nodes."
