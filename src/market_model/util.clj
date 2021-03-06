@@ -15,6 +15,8 @@ places specified by precision."
   (cl-format nil (str "~," precision "F") val))
 
 (defn time-quotient
+  "Divides a time-duration by the appropriate scaling factor to return the
+  (approximate for months and years) length of an interval of time."
   [date-1 date-2 scale]
   (cond (= scale :days)   (tick/divide
                             (tick/duration (tick/new-interval date-1 date-2))
@@ -29,6 +31,10 @@ places specified by precision."
                                (read-string))))
 
 (defn time-since
+  "Calculates the time between two dates. Takes a hash-map of options as its
+  3rd argument. The hash-map has one mandatory key, :time-scale which can take
+  one of three keyword-values; :day, :month, and :year. The optional key, :abs
+  takes true or false and is used evaluate the absolute value of the interval."
   [date-1 date-2 options]
   (let [date-1 (tick/date date-1)
         date-2 (tick/date date-2)]
@@ -43,9 +49,9 @@ places specified by precision."
                                                          (fn [_] false))))
       :else (time-quotient date-1 date-2 (:time-scale options)))))
 
-(time-since "2000-08-01" "2021-01-01" {:abs false :time-scale :months})
-
 (defn furthest-value-from
+  "Returns the element of (rest args) that is furthest from the first value it
+ receives as an argument."
   ([fixed-point val-a val-b]
    (if (apply > (map (fn [x] (math/abs (- x fixed-point))) [val-a val-b]))
      val-a
@@ -60,6 +66,7 @@ places specified by precision."
               (rest stack))
        (furthest-value-from fixed-point arg-1 arg-2)))))
 
-(comment (furthest-value-from 2 5 -10 -2 -50 65)
+(comment (time-since "2000-08-01" "2021-01-01" {:abs false :time-scale :months})
+         (furthest-value-from 2 5 -10 -2 -50 65)
          (map (fn [x] (math/abs (- x 2))) '(5 -10))
          (apply > (map (fn [x] (math/abs (- x 2))) '(5 -10))))
