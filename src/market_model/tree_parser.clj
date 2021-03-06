@@ -107,6 +107,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 (defn into-file-trees!
   [model feature-names path precision]
   (spit path (->> (model->clj model feature-names (dec precision))
+                  (cons [(py/get-attr (un-pickle "ext/gbm_model.pickle") "learning_rate") ])
                   (interpose "\n\n")
                   (apply str)
                   ((fn [data-string] (str "[" data-string "]"))))))
