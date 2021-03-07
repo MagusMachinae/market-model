@@ -10,7 +10,7 @@ places specified by precision."
   (cl-format nil (str "~," precision "E") val))
 
 (defn truncate-float
-  "Truncates decimal places"
+  "Truncates decimal places."
   [precision val]
   (cl-format nil (str "~," precision "F") val))
 
@@ -38,9 +38,9 @@ places specified by precision."
   [date-1 date-2 options]
   (let [date-1 (tick/date date-1)
         date-2 (tick/date date-2)]
-    (cond (false? (tick/< [date-1 date-2])) (- (time-since date-2
-                                                           date-1
-                                                           options))
+    (cond (false? (tick/< date-1 date-2)) (- (time-since date-2
+                                                         date-1
+                                                         options))
           (true? (:abs options)) (math/abs (time-since date-1
                                                        date-2
                                                        (update
