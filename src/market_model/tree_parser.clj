@@ -15,14 +15,10 @@
                 '[builtins :as python]
                 '[sklearn.tree :as skltree])
 
-
-
-
 (defn features-from-file
   "Creates a vector of feature names from a string representing a file path."
   [path]
   (mapv symbol (map str/lower-case (str/split-lines (slurp path)))))
-
 
 (def boston (ds/load_boston))
 
@@ -71,7 +67,7 @@ grab the numpy array at that leaf and extract the float stored in it."
 (defn get-raw-predict
   "Retrieves constant value of raw-predict from dummy regressor."
   [model]
-  (first (flatten (py/get-attr (py/get-attr model "init_") "constant_"))))
+  (first (first (py/get-attr (py/get-attr model "init_") "constant_"))))
 
 (defn walk-tree
   "Walks over the decision tree, constructing the if statement representing the
