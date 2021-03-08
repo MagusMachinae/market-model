@@ -68,6 +68,11 @@ grab the numpy array at that leaf and extract the float stored in it."
   [node tree]
   (first (first (py/get-item (py/get-attr tree :value) node))))
 
+(defn get-raw-predict
+  "Retrieves constant value of raw-predict from dummy regressor."
+  [model]
+  (first (flatten (py/get-attr (py/get-attr model "init_") "constant_"))))
+
 (defn walk-tree
   "Walks over the decision tree, constructing the if statement representing the
  node in the decision tree.Every node is checked for whether the value is
