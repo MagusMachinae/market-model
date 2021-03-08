@@ -23,6 +23,7 @@
 (time (derived-market-price model (first t/inputs)))
 
 
+;;;difference between py-predict and clj-predictions
 (map - (pmap (partial derived-market-price model) (pmap (fn [coll] (into [] coll)) t/inputs))
      t/expected-results)
 
