@@ -7,12 +7,12 @@
   "Converts value to exponential notation and rounds it to number of decimal
 places specified by precision."
   [precision val]
-  (cl-format nil (str "~," precision "E") val))
+  (read-string (cl-format nil (str "~," precision "E") val)))
 
 (defn truncate-float
   "Truncates decimal places."
   [precision val]
-  (cl-format nil (str "~," precision "F") val))
+  (read-string (cl-format nil (str "~," precision "F") val)))
 
 (defn time-quotient
   "Divides a time-duration by the appropriate scaling factor to return the
