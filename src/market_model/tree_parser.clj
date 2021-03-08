@@ -109,7 +109,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
   [model feature-names path precision]
   (spit path (->> (model->clj model feature-names (dec precision))
                   (cons [(py/get-attr model "learning_rate")
-                         (get-raw-predict model)])
+                         (mm-util/truncate 5 (get-raw-predict model))])
                   (interpose "\n\n")
                   (apply str)
                   ((fn [data-string] (str "[" data-string "]"))))))
