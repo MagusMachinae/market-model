@@ -53,7 +53,7 @@ places specified by precision."
   "Returns the element of (rest args) that is furthest from the first value it
  receives as an argument."
   ([fixed-point val-a val-b]
-   (if (apply > (map (fn [x] (math/abs (- x fixed-point))) [val-a val-b]))
+   (if (apply > (map (fn [val] (math/abs (- val fixed-point))) [val-a val-b]))
      val-a
      val-b))
   ([fixed-point val-a val-b & values]
