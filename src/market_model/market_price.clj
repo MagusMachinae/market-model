@@ -22,37 +22,20 @@
 
 (time (derived-market-price model (first t/inputs)))
 
+(comment (defn derived-market-prices
+           "Optimised implementation to avoid reopening files when mapping over inputs."
+           []
+           let [model          (read-string (slurp path))
+                learning-rate  (first (first model))
+                raw-prediction (second (first model))
+                funcs          (rest model)]
+           (+ (raw-prediction data-set) (* learning-rate (r/fold + (r/map (fn [f] (apply (eval f) data-set) funcs)))))
+           (pmap
+            (pmap (fn [coll] (into [] coll)) data-set))))
+(r/fold +
+        (r/map (fn [f] (apply (eval f) (first t/inputs)))
+         funcs))
 
 ;;;difference between py-predict and clj-predictions
 (map - (pmap (partial derived-market-price model) (pmap (fn [coll] (into [] coll)) t/inputs))
      t/expected-results)
-
-(time (doall  (pmap (fn [args] (+ 22.58793103 (* 0.1 (r/fold +
-                                                             (r/map (fn [f] (apply (eval f) args)
-                                                                      )
-                                                                    funcs)))))
-                    (pmap (fn [coll] (into [] coll)) t/inputs))))
-
-(into [] (r/map (fn [f] (apply (eval f) (into [] (first t/inputs))))
-                (read-string  (slurp "ext/trees.edn"))))
-
-(time (+ 22.58793103 (* 0.1 (r/fold + (r/map (fn [f] (apply (eval f) (into [] (first t/inputs))))
-                                             (read-string (slurp "ext/trees.edn")))))))
-
-(time (reduce + (map (fn [x] (* 2 x)) (into [] (range 100000)))))
-(time (reduce +
-              (map (fn [x] (* 0.1 x)) )(map
-                                        (fn [f] (apply (eval f) (into [] (first t/inputs))))
-                                        (read-string (slurp "trees.edn")))))
-(time (/ (r/reduce +
-                   (pmap
-                    (fn [f] (apply (eval f)  (first t/inputs)))
-                    funcs))
-         500))
-(time (read-string (slurp "ext/trees.edn")))
-
-(time (doall (pmap
-         (fn [f] (apply (eval f)  (first t/inputs)))
-         (read-string (slurp "ext/trees.edn")))))
-
-(apply (first (read-string (slurp "ext/trees.edn"))) (first t/inputs))
