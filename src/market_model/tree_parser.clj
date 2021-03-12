@@ -75,6 +75,11 @@ grab the numpy array at that leaf and extract the float stored in it."
   [model]
   (py/get-attr model "learning_rate"))
 
+(defn get-estimators
+  "Retrieves estimators from model."
+  [model]
+  (py/get-attr model :estimators_))
+
 (defn walk-tree
   "Walks over the decision tree, constructing the if statement representing the
  node in the decision tree.Every node is checked for whether the value is
@@ -106,9 +111,9 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 (defn model->clj
   "loops over estimators to build up the decision tree, then converts it into Clojure symbolic-expressions"
   [model feature-names precision]
-  (for [x (range (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 0))
-        y (range (py/get-item (py/get-attr (py/get-attr model :estimators_) :shape) 1))
-        :let [tree (py/get-item (py/get-attr model :estimators_) [x y])]]
+  (for [x (range (py/get-item (py/get-attr (get-estimators model) :shape) 0))
+        y (range (py/get-item (py/get-attr (get-estimators model) :shape) 1))
+        :let [tree (py/get-item (get-estimators model) [x y])]]
     (decision-tree->s-exps tree feature-names precision)))
 
 (defn into-file-trees!
@@ -141,6 +146,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
                   y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
                   :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
               (decision-tree->s-exps tree (get-feature-names (ds/load_boston)) 2)))
+
 
 
  (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
