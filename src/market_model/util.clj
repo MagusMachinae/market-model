@@ -3,7 +3,7 @@
             [clojure.math.numeric-tower :as math]
             [clojure.pprint :refer [cl-format]]))
 
-(defn truncate
+(defn truncate-sf
   "Converts value to exponential notation and rounds it to number of decimal
 places specified by precision."
   [precision val]

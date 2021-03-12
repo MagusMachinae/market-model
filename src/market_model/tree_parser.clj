@@ -13,7 +13,8 @@
                 '[pickle :as pick]
                 '[io :as py-io]
                 '[builtins :as python]
-                '[sklearn.tree :as skltree])
+                '[sklearn.tree :as skltree]
+                '[inspect :as gadget])
 
 (defn features-from-file
   "Creates a vector of feature names from a string representing a file path."
@@ -78,7 +79,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
   (if (not= (get-tree-feature node tree)
             -2)
       (let [name (nth feature-names (get-tree-feature node tree))
-            threshold  (mm-util/truncate precision (get-threshold node tree))]
+            threshold  (mm-util/truncate-sf precision (get-threshold node tree))]
         `(if (~'<= ~name ~threshold)
             ~(walk-tree (get-children-left node tree)
                         tree
@@ -88,7 +89,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
                         tree
                         feature-names
                         precision)))
-      (mm-util/truncate precision (get-node-value node tree))))
+      (mm-util/truncate-sf precision (get-node-value node tree))))
 
 (defn decision-tree->s-exps
   "Converts a decision tree into a clojure function definition by recursing over its nodes."
@@ -109,7 +110,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
   [model feature-names path precision]
   (spit path (->> (model->clj model feature-names (dec precision))
                   (cons [(py/get-attr model "learning_rate")
-                         (mm-util/truncate 5 (get-raw-predict model))])
+                         (mm-util/truncate-sf 5 (get-raw-predict model))])
                   (interpose "\n\n")
                   (apply str)
                   ((fn [data-string] (str "[" data-string "]"))))))
@@ -117,7 +118,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 (comment
  (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 3)
  (python/help (py/$..   skltree/_tree :Tree))
-(mm-util/truncate 5 (get-raw-predict (un-pickle "ext/gbm_model.pickle")))
+(mm-util/truncate-sf 5 (get-raw-predict (un-pickle "ext/gbm_model.pickle")))
 
  (python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_))
  (py/att-type-map (un-pickle "ext/gbm_model.pickle"))
@@ -156,14 +157,6 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 
  (let [tree (mapv (fn [x] (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x 0])) (range 500))]
    (mapv (fn [x]  (get-tree-feature 0 x)) (mapv #(py/get-attr % :tree_) tree)))
-
-
- (defn generate-trees!
-   "Builds trees.clj from a source-file"
-   [model feature-names]
-   (spit "src/trees.clj"
-         (str '(ns trees) "\n\n"
-              (model->clj model feature-names))))
 
  (defn gen-if [name threshold]
    `(if (~'<= ~name ~threshold)
