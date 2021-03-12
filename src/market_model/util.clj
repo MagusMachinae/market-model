@@ -7,7 +7,7 @@
   "Converts value to exponential notation and rounds it to number of decimal
 places specified by precision."
   [precision val]
-  (read-string (cl-format nil (str "~," precision "E") val)))
+  (read-string (cl-format nil (str "~," (dec precision) "E") val)))
 
 (defn truncate-float
   "Truncates decimal places."
