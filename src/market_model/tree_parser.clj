@@ -118,9 +118,9 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 
 (defn into-file-trees!
   [model feature-names path precision]
-  (spit path (->> (model->clj model feature-names (dec precision))
+  (spit path (->> (model->clj model feature-names precision)
                   (cons [(get-learning-rate model)
-                         (mm-util/truncate-sf 5 (get-raw-predict model))])
+                         (mm-util/truncate-sf 6 (get-raw-predict model))])
                   (interpose "\n\n")
                   (apply str)
                   ((fn [data-string] (str "[" data-string "]"))))))
