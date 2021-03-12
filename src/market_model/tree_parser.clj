@@ -70,6 +70,11 @@ grab the numpy array at that leaf and extract the float stored in it."
   [model]
   (first (first (py/get-attr (py/get-attr model "init_") "constant_"))))
 
+(defn get-learning-rate
+  "Retrieves learning rate from model"
+  [model]
+  (py/get-attr model "learning_rate"))
+
 (defn walk-tree
   "Walks over the decision tree, constructing the if statement representing the
  node in the decision tree.Every node is checked for whether the value is
@@ -109,7 +114,7 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 (defn into-file-trees!
   [model feature-names path precision]
   (spit path (->> (model->clj model feature-names (dec precision))
-                  (cons [(py/get-attr model "learning_rate")
+                  (cons [(get-learning-rate model)
                          (mm-util/truncate-sf 5 (get-raw-predict model))])
                   (interpose "\n\n")
                   (apply str)
@@ -117,16 +122,16 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
 
 (comment
  (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 3)
- (python/help (py/$..   skltree/_tree :Tree))
+ (python/help (py/$..   skltree/_tree :Tree)))
 (mm-util/truncate-sf 5 (get-raw-predict (un-pickle "ext/gbm_model.pickle")))
 
- (python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_))
- (py/att-type-map (un-pickle "ext/gbm_model.pickle"))
- (py/call-attr (un-pickle "ext/gbm_model.pickle") "_raw_predict_init" [[0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861]])
+(python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_))
+(py/att-type-map (un-pickle "ext/gbm_model.pickle"))
+(py/call-attr (un-pickle "ext/gbm_model.pickle") "_raw_predict_init" [[0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861]])
 
-(py/get-attr (un-pickle "ext/gbm_model.pickle") "init_")
- (py/att-type-map  (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_"))
-(py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_") "constant_")
+(py/get-attr (un-pickle "ext/gbm_model.pickle") "init_"
+ (py/att-type-map  (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_")))
+(py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_") "constant_"
 
  (py/get-attr (un-pickle "ext/gbm_model.pickle") "learning_rate")
  (python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_"))
