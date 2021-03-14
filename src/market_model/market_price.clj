@@ -18,7 +18,7 @@
   (let [learning-rate  (first (first model))
         raw-prediction (second (first model))
         funcs          (rest model)]
-    (mm-util/truncate 4 (+ raw-prediction  (* learning-rate (r/fold + (pmap (fn [f] (apply (eval f) data-set)) funcs)))))))
+    (mm-util/truncate-sf 5 (+ raw-prediction  (* learning-rate (r/fold + (pmap (fn [f] (apply (eval f) data-set)) funcs)))))))
 
 (time (derived-market-price model (first t/inputs)))
 
