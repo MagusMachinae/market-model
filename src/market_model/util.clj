@@ -1,7 +1,8 @@
 (ns market-model.util
   (:require [tick.alpha.api :as tick]
             [clojure.math.numeric-tower :as math]
-            [clojure.pprint :refer [cl-format]]))
+            [clojure.pprint :refer [cl-format]]
+            [clojure-csv.core :as csv]))
 
 (defn truncate-sf
   "Converts value to exponential notation and rounds it to number of decimal
@@ -65,6 +66,11 @@ places specified by precision."
               (first stack)
               (rest stack))
        (furthest-value-from fixed-point arg-1 arg-2)))))
+
+(def test-battery (map rest (csv/parse-csv (slurp "ext/validate_output.csv"))))
+(def feature-names (map symbol (take 13 (first test-battery))))
+(def inputs (rest (map (fn [x] (map read-string (take 13 x))) test-battery)))
+(def expected-results (map (partial truncate-sf 5) (mapv (comp read-string last) (rest test-battery))))
 
 (comment (time-since "2000-08-01" "2021-01-01" {:abs false :time-scale :months})
          (furthest-value-from 2 5 -10 -2 -50 65)
