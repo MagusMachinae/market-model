@@ -23,17 +23,6 @@
                          trees))))))
 
 (time (derived-market-price model (first t/inputs)))
-
-(comment (defn derived-market-prices
-           "Optimised implementation to avoid reopening files when mapping over inputs."
-           []
-           let [model          (read-string (slurp path))
-                learning-rate  (first (first model))
-                raw-prediction (second (first model))
-                funcs          (rest model)]
-           (+ (raw-prediction data-set) (* learning-rate (r/fold + (r/map (fn [f] (apply (eval f) data-set) funcs)))))
-           (pmap
-            (pmap (fn [coll] (into [] coll)) data-set))))
 (r/fold +
         (r/map (fn [f] (apply (eval f) (first t/inputs)))
          funcs))
