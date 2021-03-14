@@ -7,7 +7,6 @@
                  [clojure-csv/clojure-csv "2.0.1"]
                  [clojupyter "0.3.2"]
                  [clj-python/libpython-clj "2.00-alpha-7"]
-                 [cnuernber/dtype-next "6.00-beta-20"]
                  [tick "0.4.30-alpha"]
                  [org.clojure/math.numeric-tower "0.0.4"]]
 
