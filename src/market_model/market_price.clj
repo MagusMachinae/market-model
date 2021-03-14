@@ -1,6 +1,5 @@
 (ns market-model.market-price
   (:require [clojure.core.reducers :as r]
-            [market-model.core-test :as t]
             [market-model.util :as mm-util]))
 
 (def funcs (read-string (slurp "ext/trees.edn")))
