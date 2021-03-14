@@ -4,8 +4,9 @@
             [market-model.util :as mm-util]))
 
 (deftest
-  a-test
-  (testing "Validate generated function against battery of results from python code."
+  error-test
+  (testing "Validate generated function against battery of results from
+            python code. Checks if mean-absolute-error is within tolerance."
     (is (> 0.1
            (->> mm-util/inputs
                 (pmap (fn [coll] (into [] coll)))
