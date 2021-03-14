@@ -1,6 +1,6 @@
 (ns market-model.tree-parser
-  (:require [libpython-clj.require :refer [require-python]]
-            [libpython-clj.python :as py :refer [initialize!
+  (:require [libpython-clj2.require :refer [require-python]]
+            [libpython-clj2.python :as py :refer [initialize!
                                                  get-attr
                                                  call-attr
                                                  get-item]]
