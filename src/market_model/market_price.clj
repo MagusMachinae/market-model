@@ -2,8 +2,6 @@
   (:require [clojure.core.reducers :as r]
             [market-model.util :as mm-util]))
 
-(def funcs (read-string (slurp "ext/trees.edn")))
-
 (defn model-vector
   "Returns a vector representing the model contained in a file"
   [path]
