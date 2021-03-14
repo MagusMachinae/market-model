@@ -6,5 +6,9 @@
 (deftest
   a-test
   (testing "Validate generated function against battery of results from python code."
-    (is (= mm-util/expected-results
-           (map (fn [x] (apply mp/derived-market-price x)) mm-util/inputs)))))
+    (is (> 0.1
+           (->> mm-util/inputs
+                (pmap (fn [coll] (into [] coll)))
+                (pmap (partial mp/derived-market-price mp/model))
+                (mm-util/mean-absolute-error mm-util/expected-results)
+                (mm-util/truncate-sf 5))))))
