@@ -67,6 +67,15 @@ places specified by precision."
               (rest stack))
        (furthest-value-from fixed-point arg-1 arg-2)))))
 
+(defn mean-absolute-error
+  "Calculates mean absolute error between two datasets."
+  [coll1 coll2]
+  (let [n (if (<= (count coll1)
+                 (count coll2))
+            (count coll1)
+            (count coll2))]
+    (/ (reduce + (map (comp math/abs -) coll1 coll2)) n)))
+
 (def test-battery (map rest (csv/parse-csv (slurp "ext/validate_output.csv"))))
 (def feature-names (map symbol (take 13 (first test-battery))))
 (def inputs (rest (map (fn [x] (map read-string (take 13 x))) test-battery)))
