@@ -14,11 +14,13 @@
 
 (defn derived-market-price
   "Runs regression models over input. Takes a filepath of the location of trees.edn"
-  [model data-set]
-  (let [learning-rate  (first (first model))
-        raw-prediction (second (first model))
-        funcs          (rest model)]
-    (mm-util/truncate-sf 5 (+ raw-prediction  (* learning-rate (r/fold + (pmap (fn [f] (apply (eval f) data-set)) funcs)))))))
+  [[[learning-rate raw-prediction] & trees] data-set]
+  (mm-util/truncate-sf
+    5
+    (+ raw-prediction
+      (* learning-rate
+         (r/fold + (pmap (fn [f] (apply (eval f) data-set))
+                         trees))))))
 
 (time (derived-market-price model (first t/inputs)))
 
