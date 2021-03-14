@@ -10,7 +10,7 @@
   [path]
   (read-string (slurp path)))
 
-(def model (model-vector "trees.edn"))
+(def model (model-vector "ext/trees.edn"))
 
 (defn derived-market-price
   "Runs regression models over input. Takes a filepath of the location of trees.edn"
