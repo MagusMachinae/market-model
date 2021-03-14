@@ -22,11 +22,11 @@
          (r/fold + (pmap (fn [f] (apply (eval f) data-set))
                          trees))))))
 
-(time (derived-market-price model (first t/inputs)))
+(time (derived-market-price model (first mm-util/inputs)))
 (r/fold +
-        (r/map (fn [f] (apply (eval f) (first t/inputs)))
+        (r/map (fn [f] (apply (eval f) (first mm-util/inputs)))
          funcs))
 
 ;;;difference between py-predict and clj-predictions
 (map - (pmap (partial derived-market-price model) (pmap (fn [coll] (into [] coll)) t/inputs))
-     t/expected-results)
+     mm-util/expected-results)
