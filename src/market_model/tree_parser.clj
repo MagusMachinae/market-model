@@ -123,59 +123,57 @@ undefined (ie. the value of the node is -2). If it is, the value is returned for
                   ((fn [data-string] (str "[" data-string "]"))))))
 
 (comment
- (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 3)
- (python/help (py/$..   skltree/_tree :Tree)))
-(mm-util/truncate-sf 5 (get-raw-predict (un-pickle "ext/gbm_model.pickle")))
+  (into-file-trees! (un-pickle "ext/gbm_model.pickle") (get-feature-names boston) "trees.edn" 3)
+  (python/help (py/$..   skltree/_tree :Tree))
+  (mm-util/truncate-sf 5 (get-raw-predict (un-pickle "ext/gbm_model.pickle")))
 
-(python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_))
-(py/att-type-map (un-pickle "ext/gbm_model.pickle"))
-(py/call-attr (un-pickle "ext/gbm_model.pickle") "_raw_predict_init" [[0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861]])
+  (python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_))
+  (py/att-type-map (un-pickle "ext/gbm_model.pickle"))
+  (py/call-attr (un-pickle "ext/gbm_model.pickle") "_raw_predict_init" [[0.006,19.873,2.374,0.0,0.528,6.449,61.017,3.991,1.0,225.757,13.848,439.029,4.861]])
 
-(py/get-attr (un-pickle "ext/gbm_model.pickle") "init_"
- (py/att-type-map  (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_")))
-(py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_") "constant_"
+  (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_")
+  (py/att-type-map  (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_"))
+  (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_") "constant_")
 
- (py/get-attr (un-pickle "ext/gbm_model.pickle") "learning_rate")
- (python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_"))
- (py/call-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_") "predict" [[0.00,9.873,2.374,0.0,0.528,6.449,61.017, 0.991,1.0,25.757,1.848,43.029,4.861]])
+  (py/get-attr (un-pickle "ext/gbm_model.pickle") "learning_rate")
+  (python/help (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_"))
+  (py/call-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") "init_") "predict" [[0.00,9.873,2.374,0.0,0.528,6.449,61.017, 0.991,1.0,25.757,1.848,43.029,4.861]])
 
- (def trees (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
-                  y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
-                  :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
-              (decision-tree->s-exps tree (get-feature-names (ds/load_boston)) 2)))
+  (def trees (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
+                   y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
+                   :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
+               (decision-tree->s-exps tree (get-feature-names (ds/load_boston)) 2)))
 
-
-
- (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
-                         y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
-                         :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
-                      (py/get-attr tree :tree_))))
- (python/help tree0)
- (py/att-type-map tree0)
+  (def tree0 (first (for [x (range (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 0))
+                                        y (range  (py/get-item (py/get-attr (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) :shape) 1))
+                                        :let  [tree (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x y])]]
+                                    (py/get-attr tree :tree_))))
+  (python/help tree0)
+  (py/att-type-map tree0)
 
 
- (def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
+  (def tree0-features (map (fn [x] (get-tree-feature x tree0)) (range 214)))
 
 
- ((fn [x] (if
-            (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1))
-    (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
-  nil)
- (map (fn [x] (get-tree-feature x tree0)) (range 213))
+  ((fn [x] (if
+             (= x -2) (py/get-item (py/get-attr (py/get-attr tree :tree_) :value) 1))
+     (walk-tree x (py/get-attr tree :tree_) (get-feature-names boston)))
+   nil)
+  (map (fn [x] (get-tree-feature x tree0)) (range 213))
 
- (let [tree (mapv (fn [x] (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x 0])) (range 500))]
-   (mapv (fn [x]  (get-tree-feature 0 x)) (mapv #(py/get-attr % :tree_) tree)))
+  (let [tree (mapv (fn [x] (py/get-item (py/get-attr (un-pickle "ext/gbm_model.pickle") :estimators_) [x 0])) (range 500))]
+    (mapv (fn [x]  (get-tree-feature 0 x)) (mapv #(py/get-attr % :tree_) tree)))
 
- (defn gen-if [name threshold]
-   `(if (~'<= ~name ~threshold)
-      ~(+ 1 0)
-      (+ 1 1)))
+  (defn gen-if [name threshold]
+    `(if (~'<= ~name ~threshold)
+       ~(+ 1 0)
+       (+ 1 1)))
 
- (spit "src/trees.clj"
-       (str '(ns trees) "\n\n"
-            `(~'defn ~'tree-0 ~'[foo bar baz]
-               ~(gen-if 1 'foo))))
+  (spit "src/trees.clj"
+        (str '(ns trees) "\n\n"
+             `(~'defn ~'tree-0 ~'[foo bar baz]
+                ~(gen-if 1 'foo))))
 
- (gen-if 'foo 2)
+  (gen-if 'foo 2)
 
- `('+ 2 2))
+  `('+ 2 2))
