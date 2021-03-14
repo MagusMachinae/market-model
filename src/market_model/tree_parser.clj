@@ -9,8 +9,7 @@
 
 (initialize!)
 
-(require-python '[sklearn.datasets :as ds]
-                '[pickle :as pick]
+(require-python '[pickle :as pick]
                 '[io :as py-io]
                 '[builtins :as python]
                 '[sklearn.tree :as skltree]
@@ -20,8 +19,6 @@
   "Creates a vector of feature names from a string representing a file path."
   [path]
   (mapv symbol (map str/lower-case (str/split-lines (slurp path)))))
-
-(def boston (ds/load_boston))
 
 (defn un-pickle
   "Takes a string of the relative location of the python file containing the
