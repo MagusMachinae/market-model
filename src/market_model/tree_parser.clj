@@ -26,8 +26,6 @@ model and returns the python object stored in pickle."
   [file]
   (pick/load (py-io/open file "rb")))
 
-(un-pickle "ext/gbm_model.pickle")
-
 (defn get-feature-names
   "Returns a collection of feature names from a python object (presumably a
 dataset) as Clojure symbols. Intended for interop use to get collection of
