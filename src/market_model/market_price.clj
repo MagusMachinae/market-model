@@ -10,7 +10,8 @@
 (def model (model-vector "ext/trees.edn"))
 
 (defn derived-market-price
-  "Runs regression models over input. Takes a filepath of the location of trees.edn"
+  "Runs regression models over input. Takes a vector representing a model as
+  its first argument and a vector of arguments to be applied to an if-tree."
   [[[learning-rate raw-prediction] & trees] data-set]
   (mm-util/truncate-sf
     5
